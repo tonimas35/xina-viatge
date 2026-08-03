@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Organització · Xina 2026</title>
+<meta name="description" content="Reserves i coses pràctiques del viatge a la Xina: vols, trens, hotels, activitats, visat, pagaments i la maleta.">
+<meta name="theme-color" content="#8c2f39">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Organització · Xina 2026">
+<meta property="og:description" content="Vols, trens, hotels, activitats, visat, pagaments i la maleta.">
+<meta property="og:image" content="https://tonimas35.github.io/xina-viatge/muralla.jpg">
+<meta property="og:url" content="https://tonimas35.github.io/xina-viatge/organitzacio.html">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --ink:#2a2622; --muted:#78706a; --line:#eae6e2;
+    --sea:#8c2f39; --sea-deep:#6f242c;
+    --bg:#faf8f6;
+    --shadow:0 1px 2px rgba(60,45,40,.04), 0 3px 12px rgba(60,45,40,.06);
+    --radius:14px;
+    --content:min(1320px, 94vw);
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; color:var(--ink); background:var(--bg);
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  .hero {
+    position:relative; color:#fff; overflow:hidden;
+    padding:58px 24px 36px;
+    background:
+      linear-gradient(180deg, rgba(45,25,25,.5) 0%, rgba(50,25,28,.8) 100%),
+      url('muralla.jpg') center 45%/cover no-repeat;
+  }
+  .hero-inner { width:var(--content); margin:0 auto; }
+  .brand { position:absolute; top:15px; left:20px; z-index:4; display:inline-flex; align-items:center; gap:9px; color:#fff; text-decoration:none; }
+  .brand-mark { width:34px; height:34px; display:block; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+  .brand-name { display:flex; flex-direction:column; line-height:1; }
+  .brand-name b { font-size:15px; font-weight:700; }
+  .brand-name small { font-size:9px; font-weight:600; letter-spacing:.24em; text-transform:uppercase; opacity:.72; margin-top:3px; }
+  .langs { position:absolute; top:16px; right:16px; z-index:4; display:flex; gap:4px; }
+  .lang-btn { background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); color:#fff; font-family:inherit; font-size:12px; font-weight:700; padding:6px 10px; border-radius:8px; cursor:pointer; transition:background .15s, color .15s; }
+  .lang-btn:hover { background:rgba(255,255,255,.3); }
+  .lang-btn.active { background:#fff; color:var(--sea); border-color:#fff; }
+  .nav-btn { text-decoration:none; display:inline-flex; align-items:center; margin-right:6px; }
+  .kicker { font-size:13px; font-weight:600; letter-spacing:.04em; opacity:.9; }
+  .hero h1 { font-weight:700; font-size:clamp(26px, 4.5vw, 38px); line-height:1.06; margin:10px 0 0; }
+
+  .wrap { width:var(--content); margin:0 auto; }
+  .sec-sub { margin:26px 0 16px; color:var(--muted); font-size:14px; }
+  .org-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px; }
+  .org-card { background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+  .org-head { display:flex; align-items:center; gap:11px; padding:15px 18px 12px; border-bottom:1px solid var(--line); }
+  .org-ico { width:36px; height:36px; flex:0 0 36px; border-radius:10px; background:#f7eeef; color:var(--sea); display:grid; place-items:center; }
+  .org-head h2 { margin:0; font-size:16px; font-weight:700; }
+  .org-body { padding:6px 18px 14px; }
+  .org-row { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid #f5f2f0; }
+  .org-row:last-child { border-bottom:0; }
+  .org-info { flex:1 1 auto; min-width:0; }
+  .org-info b { display:block; font-size:14px; }
+  .org-info span { display:block; font-size:12.5px; color:var(--muted); margin-top:1px; }
+  .go { white-space:nowrap; display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600; color:#fff; background:var(--sea); border-radius:9px; padding:7px 12px; text-decoration:none; transition:background .15s; }
+  .go:hover { background:var(--sea-deep); }
+  .go.soft { color:var(--sea); background:#f7eeef; border:1px solid #eddcde; }
+  .go.soft:hover { background:#f2e2e4; }
+  .pending { white-space:nowrap; font-size:11px; font-weight:600; color:var(--muted); background:#f7f4f2; border:1px dashed #d8cfc9; border-radius:999px; padding:5px 11px; }
+  .chip { white-space:nowrap; font-size:11px; font-weight:600; color:#2f7a52; background:#e9f6ee; border-radius:999px; padding:5px 11px; }
+  .chip.warn { color:#9a6a12; background:#fdf1dd; }
+
+  .check { list-style:none; margin:4px 0 0; padding:0; display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:2px 18px; }
+  .check li { padding:7px 0; }
+  .check label { display:flex; align-items:center; gap:10px; font-size:14px; cursor:pointer; }
+  .check input { width:17px; height:17px; accent-color:var(--sea); cursor:pointer; flex:0 0 17px; }
+  .check input:checked + span { text-decoration:line-through; color:var(--muted); }
+  .pack-note { margin:12px 0 2px; font-size:12.5px; color:var(--muted); }
+  .pack-count { font-size:12px; font-weight:700; color:var(--sea); background:#f7eeef; border-radius:999px; padding:4px 10px; margin-left:auto; }
+
+  footer { text-align:center; color:var(--muted); font-size:12.5px; padding:36px 24px 44px; }
+  footer a { color:inherit; }
+  @media (max-width:560px){ .hero { padding:48px 18px 28px; } .brand-name { display:none; } }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <a class="brand" href="index.html">
+    <svg class="brand-mark" viewBox="0 0 48 48" fill="none" role="img" aria-label="Xina">
+      <defs><clipPath id="cnClip"><circle cx="24" cy="24" r="20"/></clipPath></defs>
+      <circle cx="24" cy="24" r="21.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+      <g clip-path="url(#cnClip)">
+        <circle cx="15" cy="14" r="3.2" fill="currentColor"/>
+        <path d="M24 8 L33 15 L15 15 Z" fill="currentColor"/>
+        <path d="M11 22 L37 22 L33 18 L15 18 Z" fill="currentColor"/>
+        <path d="M8 32 L40 32 L35 27 L13 27 Z" fill="currentColor"/>
+        <rect x="21" y="34" width="6" height="10" fill="currentColor"/>
+        <path d="M4 44 L44 44" stroke="currentColor" stroke-width="2"/>
+      </g>
+    </svg>
+    <span class="brand-name"><b>Xina</b><small>2026</small></span>
+  </a>
+  <div class="langs">
+    <a class="lang-btn nav-btn" href="index.html" data-i18n="navItin">← Itinerari</a>
+    <button type="button" class="lang-btn" data-lang="ca">CA</button>
+    <button type="button" class="lang-btn" data-lang="es">ES</button>
+    <button type="button" class="lang-btn" data-lang="en">EN</button>
+  </div>
+  <div class="hero-inner">
+    <span class="kicker" data-i18n="kicker">28 d'agost – 6 de setembre de 2026 · 5 persones</span>
+    <h1 data-i18n="orgTitle">Organització</h1>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="sec-sub" data-i18n="orgSub">Reserves, coses pràctiques i la maleta: tot el que no és itinerari, en un sol lloc.</p>
+
+  <div class="org-grid">
+
+    <section class="org-card">
+      <div class="org-head">
+        <span class="org-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></span>
+        <h2 data-i18n="cFlights">Vols i tren</h2>
+      </div>
+      <div class="org-body">
+        <div class="org-row">
+          <div class="org-info" data-i18n="f1"><b>Vol d'anada a Beijing</b><span>divendres 28 d'agost · arribada a les 12:00</span></div>
+          <span class="pending" data-i18n="pend">Pendent d'enllaç</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="f2"><b>Tren bala G323 · Beijing → Xi'an</b><span>diumenge 30 · surt 15:00-15:05 de Beijing West · arriba 22:10</span></div>
+          <span class="chip" data-i18n="booked">Reservat</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="f3"><b>Vol Xi'an (XIY) → Zhangjiajie (DYG)</b><span>dilluns 31 · sortida cap a l'aeroport a les 18:00</span></div>
+          <span class="pending" data-i18n="pendHora">Falta confirmar l'hora</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="f4"><b>Vol Zhangjiajie (DYG) → Shanghai (PVG)</b><span>divendres 4 · arribada a les 22:40</span></div>
+          <span class="pending" data-i18n="pendHora">Falta confirmar l'hora</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="f5"><b>Vol de tornada a Barcelona</b><span>diumenge 6 · 00:00 des de Shanghai Pudong</span></div>
+          <span class="pending" data-i18n="pend">Pendent d'enllaç</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="org-card">
+      <div class="org-head">
+        <span class="org-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>
+        <h2 data-i18n="cStay">Allotjaments</h2>
+      </div>
+      <div class="org-body">
+        <div class="org-row">
+          <div class="org-info" data-i18n="s1"><b>Legendale Hotel Beijing</b><span>nits del 28, 29 i 30 d'agost</span></div>
+          <a class="go soft" href="https://www.google.com/maps/search/Legendale+Hotel+Beijing" target="_blank" rel="noopener">Maps ↗</a>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="s2"><b>Hotel a Xi'an</b><span>nit del 30 · a 30-40 min de l'estació, prop del Bell Tower</span></div>
+          <span class="pending" data-i18n="pendNom">Falta el nom</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="s3"><b>Hampton by Hilton Zhangjiajie Tianmen Mountain</b><span>nit del 31 · a 15 min a peu del telefèric</span></div>
+          <a class="go soft" href="https://www.google.com/maps/search/Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain" target="_blank" rel="noopener">Maps ↗</a>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="s4"><b>SANHE Hotel · Wulingyuan</b><span>nits de l'1 i el 2 de setembre · amb experiència del te i visita al parc</span></div>
+          <a class="go soft" href="https://www.google.com/maps/search/SANHE+Hotel+Wulingyuan" target="_blank" rel="noopener">Maps ↗</a>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="s5"><b>Hotel a Fenghuang</b><span>nit del 3 · suite presidencial</span></div>
+          <span class="pending" data-i18n="pendNom">Falta el nom</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="s6"><b>Atour Hotel Shanghai Bund Land Plaza</b><span>nits del 4 i el 5 · Henan Middle Road / People's Square</span></div>
+          <a class="go soft" href="https://www.google.com/maps/search/Atour+Hotel+Shanghai+Bund+Land+Plaza" target="_blank" rel="noopener">Maps ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="org-card">
+      <div class="org-head">
+        <span class="org-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
+        <h2 data-i18n="cAct">Activitats i transports</h2>
+      </div>
+      <div class="org-body">
+        <div class="org-row">
+          <div class="org-info" data-i18n="a1"><b>Guia-taxi Muralla de Mutianyu</b><span>diumenge 30 · hotel → Muralla → estació del tren bala</span></div>
+          <span class="chip" data-i18n="booked">Contractat</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="a2"><b>Visita guiada a la Ciutat Prohibida</b><span>dissabte 29 · l'entrada és per reserva prèvia obligatòria i s'esgota</span></div>
+          <span class="pending" data-i18n="urgent">Urgent</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="a3"><b>Taxi als guerrers de terracota</b><span>dilluns 31 · recollida a les 8:30</span></div>
+          <span class="chip" data-i18n="booked">Contractat</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="a4"><b>Tiquets Tianmen Mountain (línia A)</b><span>dimarts 1 · comprats a Lily, e-tiquet</span></div>
+          <span class="chip" data-i18n="booked">Comprats</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="a5"><b>Entrada al parc de Zhangjiajie (Avatar)</b><span>dimecres 2 · inclosa amb l'hotel, per confirmar zones i accessos</span></div>
+          <span class="pending" data-i18n="tbd">Per concretar</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="a6"><b>Minivan privada Wulingyuan → Fenghuang</b><span>dijous 3 · amb parada a Furong o directes</span></div>
+          <span class="pending" data-i18n="tbd">Per concretar</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="a7"><b>Transport Fenghuang → aeroport de Zhangjiajie</b><span>divendres 4 · unes 3 hores de trajecte</span></div>
+          <span class="pending" data-i18n="tbd">Per concretar</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="a8"><b>Creuer pel riu Huangpu</b><span>dissabte 5 · 20:30 des de Shiliupu Wharf · es contracta allà</span></div>
+          <span class="chip warn" data-i18n="onsite">Allà mateix</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="org-card">
+      <div class="org-head">
+        <span class="org-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/></svg></span>
+        <h2 data-i18n="cDocs">Documentació i mòbil</h2>
+      </div>
+      <div class="org-body">
+        <div class="org-row">
+          <div class="org-info" data-i18n="v1"><b>Passaport i visat</b><span>els espanyols tenen exempció de visat per estades curtes, però cal confirmar-ho abans de sortir: la política canvia</span></div>
+          <a class="go soft" href="https://www.exteriores.gob.es/Embajadas/pekin/es/Paginas/index.aspx" target="_blank" rel="noopener" data-i18n="check">Consultar ↗</a>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="v2"><b>VPN instal·lada abans de marxar</b><span>a la Xina no funcionen Google, Maps, WhatsApp, Instagram ni Gmail sense VPN, i un cop allà no es poden descarregar</span></div>
+          <span class="pending" data-i18n="urgent">Urgent</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="v3"><b>Alipay o WeChat Pay</b><span>la Xina és pràcticament sense efectiu; val la pena deixar-ho configurat amb la targeta des de casa</span></div>
+          <span class="pending" data-i18n="rec">Recomanat</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="v4"><b>eSIM o roaming</b><span>una eSIM internacional sol saltar-se el bloqueig i estalvia problemes</span></div>
+          <span class="pending" data-i18n="rec">Recomanat</span>
+        </div>
+        <div class="org-row">
+          <div class="org-info" data-i18n="v5"><b>Passaport a mà als trens</b><span>a l'estació el demanen diverses vegades: control d'accés, seguretat i abans de pujar</span></div>
+          <span class="chip" data-i18n="info">Recordatori</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="org-card" style="grid-column:1/-1">
+      <div class="org-head">
+        <span class="org-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span>
+        <h2 data-i18n="cPack">La maleta</h2>
+        <span class="pack-count" id="packCount">0/0</span>
+      </div>
+      <div class="org-body">
+        <ul class="check">
+          <li><label><input type="checkbox" id="pk1"><span data-i18n="p1">Passaport (i còpia al mòbil)</span></label></li>
+          <li><label><input type="checkbox" id="pk2"><span data-i18n="p2">VPN instal·lada i provada</span></label></li>
+          <li><label><input type="checkbox" id="pk3"><span data-i18n="p3">Alipay / WeChat Pay configurats</span></label></li>
+          <li><label><input type="checkbox" id="pk4"><span data-i18n="p4">Adaptador d'endoll (tipus A i I)</span></label></li>
+          <li><label><input type="checkbox" id="pk5"><span data-i18n="p5">Powerbank (a la maleta de mà)</span></label></li>
+          <li><label><input type="checkbox" id="pk6"><span data-i18n="p6">Calçat còmode i antilliscant</span></label></li>
+          <li><label><input type="checkbox" id="pk7"><span data-i18n="p7">Roba lleugera (calor i humitat)</span></label></li>
+          <li><label><input type="checkbox" id="pk8"><span data-i18n="p8">Xubasquero o impermeable fi</span></label></li>
+          <li><label><input type="checkbox" id="pk9"><span data-i18n="p9">Protecció solar i gorra</span></label></li>
+          <li><label><input type="checkbox" id="pk10"><span data-i18n="p10">Cantimplora (l'aigua és cara als recintes)</span></label></li>
+          <li><label><input type="checkbox" id="pk11"><span data-i18n="p11">Farmaciola i medicació habitual</span></label></li>
+          <li><label><input type="checkbox" id="pk12"><span data-i18n="p12">Efectiu en iuans per als primers dies</span></label></li>
+          <li><label><input type="checkbox" id="pk13"><span data-i18n="p13">Motxilla petita per les excursions</span></label></li>
+          <li><label><input type="checkbox" id="pk14"><span data-i18n="p14">Maleta amb espai per les compres</span></label></li>
+        </ul>
+        <p class="pack-note" data-i18n="packNote">Endolls a la Xina: 220 V, sobretot tipus A (dues pales planes) i I (tres pales inclinades). Cal adaptador. La llista es desa al teu mòbil: cadascú marca la seva.</p>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<footer data-i18n="footer">Xina · 28 d'agost – 6 de setembre de 2026 · fet per a la família<br>
+Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blank" rel="noopener">Wikimedia Commons</a>, CC BY-SA</footer>
+
+<script>
+  var INIT_LANG = 'ca';
+  try { INIT_LANG = localStorage.getItem('cn_lang') || 'ca'; } catch(e){}
+  if (['ca','es','en'].indexOf(INIT_LANG) < 0) INIT_LANG = 'ca';
+
+  var I18N = {
+    es: {
+      navItin: "← Itinerario",
+      kicker: "28 de agosto – 6 de septiembre de 2026 · 5 personas",
+      orgTitle: "Organización",
+      orgSub: "Reservas, cosas prácticas y la maleta: todo lo que no es itinerario, en un solo sitio.",
+      cFlights: "Vuelos y tren",
+      f1: '<b>Vuelo de ida a Beijing</b><span>viernes 28 de agosto · llegada a las 12:00</span>',
+      f2: '<b>Tren bala G323 · Beijing → Xi\'an</b><span>domingo 30 · sale 15:00-15:05 de Beijing West · llega 22:10</span>',
+      f3: '<b>Vuelo Xi\'an (XIY) → Zhangjiajie (DYG)</b><span>lunes 31 · salida hacia el aeropuerto a las 18:00</span>',
+      f4: '<b>Vuelo Zhangjiajie (DYG) → Shanghai (PVG)</b><span>viernes 4 · llegada a las 22:40</span>',
+      f5: '<b>Vuelo de vuelta a Barcelona</b><span>domingo 6 · 00:00 desde Shanghai Pudong</span>',
+      cStay: "Alojamientos",
+      s1: '<b>Legendale Hotel Beijing</b><span>noches del 28, 29 y 30 de agosto</span>',
+      s2: '<b>Hotel en Xi\'an</b><span>noche del 30 · a 30-40 min de la estación, cerca del Bell Tower</span>',
+      s3: '<b>Hampton by Hilton Zhangjiajie Tianmen Mountain</b><span>noche del 31 · a 15 min a pie del teleférico</span>',
+      s4: '<b>SANHE Hotel · Wulingyuan</b><span>noches del 1 y el 2 de septiembre · con experiencia del té y visita al parque</span>',
+      s5: '<b>Hotel en Fenghuang</b><span>noche del 3 · suite presidencial</span>',
+      s6: '<b>Atour Hotel Shanghai Bund Land Plaza</b><span>noches del 4 y el 5 · Henan Middle Road / People\'s Square</span>',
+      cAct: "Actividades y transportes",
+      a1: '<b>Guía-taxi Muralla de Mutianyu</b><span>domingo 30 · hotel → Muralla → estación del tren bala</span>',
+      a2: '<b>Visita guiada a la Ciudad Prohibida</b><span>sábado 29 · la entrada es por reserva previa obligatoria y se agota</span>',
+      a3: '<b>Taxi a los guerreros de terracota</b><span>lunes 31 · recogida a las 8:30</span>',
+      a4: '<b>Tickets Tianmen Mountain (línea A)</b><span>martes 1 · comprados en Lily, e-ticket</span>',
+      a5: '<b>Entrada al parque de Zhangjiajie (Avatar)</b><span>miércoles 2 · incluida con el hotel, por confirmar zonas y accesos</span>',
+      a6: '<b>Minivan privada Wulingyuan → Fenghuang</b><span>jueves 3 · con parada en Furong o directos</span>',
+      a7: '<b>Transporte Fenghuang → aeropuerto de Zhangjiajie</b><span>viernes 4 · unas 3 horas de trayecto</span>',
+      a8: '<b>Crucero por el río Huangpu</b><span>sábado 5 · 20:30 desde Shiliupu Wharf · se contrata allí</span>',
+      cDocs: "Documentación y móvil",
+      v1: '<b>Pasaporte y visado</b><span>los españoles tienen exención de visado para estancias cortas, pero hay que confirmarlo antes de salir: la política cambia</span>',
+      v2: '<b>VPN instalada antes de irse</b><span>en China no funcionan Google, Maps, WhatsApp, Instagram ni Gmail sin VPN, y una vez allí no se pueden descargar</span>',
+      v3: '<b>Alipay o WeChat Pay</b><span>China es prácticamente sin efectivo; vale la pena dejarlo configurado con la tarjeta desde casa</span>',
+      v4: '<b>eSIM o roaming</b><span>una eSIM internacional suele saltarse el bloqueo y ahorra problemas</span>',
+      v5: '<b>Pasaporte a mano en los trenes</b><span>en la estación lo piden varias veces: control de acceso, seguridad y antes de subir</span>',
+      cPack: "La maleta",
+      p1: "Pasaporte (y copia en el móvil)", p2: "VPN instalada y probada", p3: "Alipay / WeChat Pay configurados",
+      p4: "Adaptador de enchufe (tipo A e I)", p5: "Powerbank (en el equipaje de mano)", p6: "Calzado cómodo y antideslizante",
+      p7: "Ropa ligera (calor y humedad)", p8: "Chubasquero o impermeable fino", p9: "Protección solar y gorra",
+      p10: "Cantimplora (el agua es cara en los recintos)", p11: "Botiquín y medicación habitual", p12: "Efectivo en yuanes para los primeros días",
+      p13: "Mochila pequeña para las excursiones", p14: "Maleta con espacio para las compras",
+      packNote: "Enchufes en China: 220 V, sobre todo tipo A (dos palas planas) e I (tres palas inclinadas). Hace falta adaptador. La lista se guarda en tu móvil: cada uno marca la suya.",
+      pend: "Pendiente de enlace", pendHora: "Falta confirmar la hora", pendNom: "Falta el nombre",
+      booked: "Contratado", urgent: "Urgente", tbd: "Por concretar", onsite: "Allí mismo", rec: "Recomendado", info: "Recordatorio", check: "Consultar ↗",
+      footer: 'China · 28 de agosto – 6 de septiembre de 2026 · hecho para la familia<br>Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blank" rel="noopener">Wikimedia Commons</a>, CC BY-SA'
+    },
+    en: {
+      navItin: "← Itinerary",
+      kicker: "28 August – 6 September 2026 · 5 people",
+      orgTitle: "Planning",
+      orgSub: "Bookings, practical matters and the packing list: everything that isn't the itinerary, in one place.",
+      cFlights: "Flights and train",
+      f1: '<b>Outbound flight to Beijing</b><span>Friday 28 August · landing at 12:00</span>',
+      f2: '<b>Bullet train G323 · Beijing → Xi\'an</b><span>Sunday 30 · departs 15:00-15:05 from Beijing West · arrives 22:10</span>',
+      f3: '<b>Flight Xi\'an (XIY) → Zhangjiajie (DYG)</b><span>Monday 31 · leaving for the airport at 18:00</span>',
+      f4: '<b>Flight Zhangjiajie (DYG) → Shanghai (PVG)</b><span>Friday 4 · arriving at 22:40</span>',
+      f5: '<b>Return flight to Barcelona</b><span>Sunday 6 · 00:00 from Shanghai Pudong</span>',
+      cStay: "Accommodation",
+      s1: '<b>Legendale Hotel Beijing</b><span>nights of 28, 29 and 30 August</span>',
+      s2: '<b>Hotel in Xi\'an</b><span>night of the 30th · 30-40 min from the station, near the Bell Tower</span>',
+      s3: '<b>Hampton by Hilton Zhangjiajie Tianmen Mountain</b><span>night of the 31st · 15 min walk from the cable car</span>',
+      s4: '<b>SANHE Hotel · Wulingyuan</b><span>nights of 1 and 2 September · with tea experience and park visit</span>',
+      s5: '<b>Hotel in Fenghuang</b><span>night of the 3rd · presidential suite</span>',
+      s6: '<b>Atour Hotel Shanghai Bund Land Plaza</b><span>nights of the 4th and 5th · Henan Middle Road / People\'s Square</span>',
+      cAct: "Activities and transport",
+      a1: '<b>Guide-driver Mutianyu Great Wall</b><span>Sunday 30 · hotel → Wall → bullet train station</span>',
+      a2: '<b>Guided tour of the Forbidden City</b><span>Saturday 29 · entry requires advance booking and sells out</span>',
+      a3: '<b>Taxi to the Terracotta Army</b><span>Monday 31 · pick-up at 8:30</span>',
+      a4: '<b>Tianmen Mountain tickets (line A)</b><span>Tuesday 1 · bought through Lily, e-ticket</span>',
+      a5: '<b>Zhangjiajie park entry (Avatar)</b><span>Wednesday 2 · included with the hotel, areas and access to confirm</span>',
+      a6: '<b>Private minivan Wulingyuan → Fenghuang</b><span>Thursday 3 · with a stop in Furong or direct</span>',
+      a7: '<b>Transport Fenghuang → Zhangjiajie airport</b><span>Friday 4 · about a 3-hour drive</span>',
+      a8: '<b>Huangpu river cruise</b><span>Saturday 5 · 20:30 from Shiliupu Wharf · booked on the spot</span>',
+      cDocs: "Documents and phone",
+      v1: '<b>Passport and visa</b><span>Spanish citizens have a visa waiver for short stays, but confirm it before leaving: the policy changes</span>',
+      v2: '<b>VPN installed before leaving</b><span>in China, Google, Maps, WhatsApp, Instagram and Gmail don\'t work without a VPN, and once there you can\'t download one</span>',
+      v3: '<b>Alipay or WeChat Pay</b><span>China is almost cashless; worth setting up with your card from home</span>',
+      v4: '<b>eSIM or roaming</b><span>an international eSIM usually bypasses the blocking and saves trouble</span>',
+      v5: '<b>Passport in hand at the stations</b><span>it is checked several times: entrance control, security and before boarding</span>',
+      cPack: "Packing list",
+      p1: "Passport (and a copy on your phone)", p2: "VPN installed and tested", p3: "Alipay / WeChat Pay set up",
+      p4: "Plug adapter (type A and I)", p5: "Power bank (in hand luggage)", p6: "Comfortable, non-slip shoes",
+      p7: "Light clothing (heat and humidity)", p8: "Light rain jacket", p9: "Sunscreen and cap",
+      p10: "Water bottle (water is pricey inside the sites)", p11: "First-aid kit and regular medication", p12: "Some cash in yuan for the first days",
+      p13: "Small backpack for day trips", p14: "Suitcase with room for shopping",
+      packNote: "Plugs in China: 220 V, mostly type A (two flat pins) and I (three angled pins). An adapter is needed. The list is saved on your phone: everyone ticks their own.",
+      pend: "Link pending", pendHora: "Time to confirm", pendNom: "Name missing",
+      booked: "Booked", urgent: "Urgent", tbd: "To confirm", onsite: "On the spot", rec: "Recommended", info: "Reminder", check: "Check ↗",
+      footer: 'China · 28 August – 6 September 2026 · made for the family<br>Photos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blank" rel="noopener">Wikimedia Commons</a>, CC BY-SA'
+    }
+  };
+
+  var i18nOrig = {};
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k = el.getAttribute('data-i18n');
+    if(!(k in i18nOrig)) i18nOrig[k] = el.innerHTML;
+  });
+  function setLang(lang){
+    var dict = I18N[lang];
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var k = el.getAttribute('data-i18n');
+      var v = (lang === 'ca') ? i18nOrig[k] : (dict && dict[k] != null ? dict[k] : i18nOrig[k]);
+      if(v != null) el.innerHTML = v;
+    });
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-btn[data-lang]').forEach(function(b){
+      var on = b.getAttribute('data-lang') === lang;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on);
+    });
+    try { localStorage.setItem('cn_lang', lang); } catch(e){}
+  }
+  document.querySelectorAll('.lang-btn[data-lang]').forEach(function(b){
+    b.addEventListener('click', function(){ setLang(b.getAttribute('data-lang')); });
+  });
+  setLang(INIT_LANG);
+
+  function updCount(){
+    var t = document.querySelectorAll('.check input').length;
+    var c = document.querySelectorAll('.check input:checked').length;
+    document.getElementById('packCount').textContent = c + '/' + t;
+  }
+  document.querySelectorAll('.check input').forEach(function(cb){
+    var k = 'cn_pack_' + cb.id;
+    try { cb.checked = localStorage.getItem(k) === '1'; } catch(e){}
+    cb.addEventListener('change', function(){
+      try { localStorage.setItem(k, cb.checked ? '1' : '0'); } catch(e){}
+      updCount();
+    });
+  });
+  updCount();
+</script>
+</body>
+</html>

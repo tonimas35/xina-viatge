@@ -1,0 +1,12 @@
+{
+  "name": "Xina · 28 agost – 6 setembre 2026",
+  "short_name": "Xina",
+  "description": "Guia del viatge a la Xina, 28 d'agost a 6 de setembre de 2026",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#faf8f6",
+  "theme_color": "#8c2f39",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

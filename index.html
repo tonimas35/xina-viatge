@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xina · 28 agost – 6 setembre 2026</title>
+<meta name="description" content="Guia del viatge a la Xina, 28 d'agost a 6 de setembre de 2026: Beijing, Xi'an, Zhangjiajie, Fenghuang i Shanghai. Mapa interactiu i itinerari dia a dia.">
+<meta name="theme-color" content="#8c2f39">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Xina · 28 agost – 6 setembre 2026">
+<meta property="og:description" content="Mapa interactiu i itinerari dia a dia: Beijing, la Muralla, Xi'an, Tianmen, les muntanyes d'Avatar, Fenghuang i Shanghai.">
+<meta property="og:image" content="https://tonimas35.github.io/xina-viatge/muralla.jpg">
+<meta property="og:url" content="https://tonimas35.github.io/xina-viatge/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  :root {
+    --ink:#2a2622; --muted:#78706a; --line:#eae6e2;
+    --sea:#8c2f39; --sea-deep:#6f242c;
+    --d1:#c0392b; --d2:#d1603d; --d3:#c9992e;
+    --d4:#a9752f;
+    --d5:#5a9e5e; --d6:#2f8f7a; --d7:#3d8fa0; --d8:#4a7fb5;
+    --d9:#5a63b0; --d10:#7e5aa8;
+    --base:#3a2f2b;
+    --bg:#faf8f6;
+    --shadow:0 1px 2px rgba(60,45,40,.04), 0 3px 12px rgba(60,45,40,.06);
+    --radius:14px;
+    --content:min(1320px, 94vw);
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    margin:0; color:var(--ink); background:var(--bg);
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    position:relative; color:#fff; overflow:hidden;
+    padding:64px 24px 48px;
+    background:
+      linear-gradient(180deg, rgba(45,25,25,.42) 0%, rgba(50,25,28,.75) 100%),
+      url('muralla.jpg') center 45%/cover no-repeat;
+  }
+  .hero-inner { width:var(--content); margin:0 auto; }
+  .langs { position:absolute; top:16px; right:16px; z-index:4; display:flex; gap:4px; }
+  .lang-btn { background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); color:#fff; font-family:inherit; font-size:12px; font-weight:700; letter-spacing:.02em; padding:6px 10px; border-radius:8px; cursor:pointer; transition:background .15s, color .15s; }
+  .lang-btn:hover { background:rgba(255,255,255,.3); }
+  .lang-btn.active { background:#fff; color:var(--sea); border-color:#fff; }
+  .nav-btn { text-decoration:none; display:inline-flex; align-items:center; margin-right:6px; }
+  .brand { position:absolute; top:15px; left:20px; z-index:4; display:inline-flex; align-items:center; gap:9px; color:#fff; }
+  .brand-mark { width:34px; height:34px; display:block; filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+  .brand-name { display:flex; flex-direction:column; line-height:1; }
+  .brand-name b { font-size:15px; font-weight:700; letter-spacing:.01em; }
+  .brand-name small { font-size:9px; font-weight:600; letter-spacing:.24em; text-transform:uppercase; opacity:.72; margin-top:3px; }
+  .kicker { font-size:13px; font-weight:600; letter-spacing:.04em; opacity:.9; }
+  .hero h1 { font-weight:700; font-size:clamp(30px, 5vw, 46px); line-height:1.06; margin:10px 0 8px; letter-spacing:-.01em; }
+
+  /* ---------- LAYOUT ---------- */
+  .wrap { width:var(--content); margin:0 auto; padding:0; }
+  section { margin-top:40px; }
+  .sec-title { font-size:21px; font-weight:700; margin:0 0 3px; letter-spacing:-.01em; }
+  .sec-sub { margin:0 0 16px; color:var(--muted); font-size:14px; }
+
+  /* ---------- MAP ---------- */
+  .map-card { display:flex; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); border:1px solid var(--line); background:#fff; }
+  #map { flex:1 1 auto; height:68vh; min-height:440px; }
+  .legend { display:flex; flex-direction:column; gap:6px; padding:14px; width:210px; flex:0 0 210px; background:#fff; border-left:1px solid var(--line); overflow-y:auto; }
+  .legend-title { font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin-bottom:2px; }
+  .leg {
+    width:100%; display:inline-flex; align-items:center; gap:8px; color:var(--muted);
+    background:#f7f4f2; border:1px solid var(--line); border-radius:10px;
+    padding:8px 11px; font-family:inherit; font-size:12.5px; font-weight:600;
+    cursor:pointer; text-align:left; transition:background .15s, color .15s, border-color .15s;
+  }
+  .leg:hover { border-color:#d8cfc9; color:var(--ink); }
+  .leg.active { background:var(--sea); color:#fff; border-color:var(--sea); }
+  .leg.active .dot { box-shadow:0 0 0 3px rgba(255,255,255,.35); }
+  .leg-reset { color:var(--sea); margin-top:2px; }
+  .dot { width:11px; height:11px; border-radius:50%; display:inline-block; flex:0 0 11px; box-shadow:0 0 0 3px rgba(0,0,0,.04); }
+
+  /* ---------- DAYS ---------- */
+  .days { display:grid; grid-template-columns:repeat(auto-fit, minmax(340px, 1fr)); gap:16px; }
+  .day { background:#fff; border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+  .day-head { display:flex; align-items:center; flex-wrap:wrap; gap:13px; padding:16px 18px 13px; border-bottom:1px solid var(--line); }
+  .day-num { width:38px; height:38px; flex:0 0 38px; border-radius:11px; display:grid; place-items:center; color:#fff; font-weight:700; font-size:17px; }
+  .day-titles { min-width:0; }
+  .day-titles h3 { margin:0; font-size:16px; font-weight:700; }
+  .day-titles .dow { display:block; font-size:12px; font-weight:600; color:var(--muted); letter-spacing:.03em; text-transform:uppercase; }
+  .day-move { margin-left:auto; font-size:12px; font-weight:600; color:var(--muted); white-space:nowrap; display:inline-flex; align-items:center; gap:5px; }
+  .day-move svg { opacity:.7; }
+  .day-route {
+    align-self:center; white-space:nowrap;
+    display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600;
+    color:var(--sea); background:#f7eeef; border:1px solid #eddcde; border-radius:9px;
+    padding:7px 11px; text-decoration:none; transition:background .15s, border-color .15s;
+  }
+  .day-route:hover { background:#f2e2e4; border-color:#e3cbcd; }
+  .day-body { display:flex; flex-wrap:wrap; align-items:flex-start; }
+  .day-body > .stops { flex:2 1 330px; }
+  .day-photos { flex:1 1 230px; max-width:460px; display:grid; gap:10px; padding:12px 18px 18px; }
+  .day-photos figure { margin:0; position:relative; border-radius:11px; overflow:hidden; border:1px solid var(--line); box-shadow:var(--shadow); }
+  .day-photos img { display:block; width:100%; height:170px; object-fit:cover; }
+  .day-photos figcaption { position:absolute; left:0; right:0; bottom:0; padding:16px 11px 7px; font-size:12px; font-weight:600; color:#fff; background:linear-gradient(to top, rgba(0,0,0,.62), transparent); }
+  .stops { list-style:none; margin:0; padding:8px 18px 16px; }
+  .stops li { display:flex; gap:13px; padding:10px 0; border-bottom:1px solid #f5f2f0; }
+  .stops li:last-child { border-bottom:0; }
+  .time { flex:0 0 56px; font-variant-numeric:tabular-nums; font-weight:700; font-size:13.5px; color:var(--ink); padding-top:1px; }
+  .stop-body { font-size:14px; color:#48403b; }
+  .stop-body a { color:var(--sea); font-weight:600; text-decoration:none; border-bottom:1px solid rgba(140,47,57,.25); }
+  .stop-body a:hover { border-bottom-color:var(--sea); }
+  .stop-body .name { font-weight:700; color:var(--ink); }
+  .subs { margin:6px 0 2px; padding-left:16px; color:var(--muted); font-size:13px; }
+  .subs li { margin:2px 0; }
+  .options { margin:8px 0 2px; padding:0; list-style:none; counter-reset:opt; display:grid; gap:6px; }
+  .options li { position:relative; padding:8px 11px 8px 34px; background:#f7f4f2; border:1px solid var(--line); border-radius:9px; font-size:13.5px; }
+  .options li::before { counter-increment:opt; content:counter(opt); position:absolute; left:9px; top:7px; width:19px; height:19px; border-radius:50%; background:var(--sea); color:#fff; font-size:11px; font-weight:700; display:grid; place-items:center; }
+  .pk { font-size:12.5px; color:var(--muted); font-weight:500; }
+  .tag { display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:2px 7px; border-radius:5px; margin-left:5px; background:#fbeaec; color:var(--d1); vertical-align:middle; }
+  .tag.warn { background:#fdf1dd; color:#9a6a12; }
+  .note { margin:7px 0 0; padding:9px 12px; background:#fdf7ee; border:1px solid #f2e4cd; border-radius:9px; font-size:13px; color:#6b5836; }
+  .note b { color:#5a4728; }
+
+  footer { text-align:center; color:var(--muted); font-size:12.5px; padding:36px 24px 44px; }
+  footer a { color:inherit; }
+
+  /* ---------- Leaflet popup ---------- */
+  .leaflet-popup-content-wrapper { border-radius:12px; box-shadow:0 8px 26px rgba(60,45,40,.18); }
+  .leaflet-popup-content { margin:13px 15px; font-family:inherit; }
+  .pop-img { width:210px; height:96px; object-fit:cover; border-radius:9px; display:block; margin-bottom:9px; }
+  .pop-title { font-weight:700; font-size:14px; color:var(--ink); }
+  .pop-sub { font-size:12.5px; color:var(--muted); margin:3px 0 9px; }
+  .pop-link { display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600; color:#fff; background:var(--sea); padding:6px 11px; border-radius:8px; text-decoration:none; }
+  .pop-link:hover { background:var(--sea-deep); }
+  .leaflet-tooltip.pin-label {
+    background:#fff; border:0; border-radius:7px; padding:3px 8px;
+    color:var(--ink); font-family:inherit; font-size:11px; font-weight:600;
+    box-shadow:0 1px 5px rgba(40,30,25,.32); white-space:nowrap;
+  }
+  .leaflet-tooltip.pin-label::before { display:none; }
+
+  /* ---------- Base (hotel) marker ---------- */
+  .base-pin { position:relative; width:28px; height:28px; }
+  .base-ring { position:absolute; left:50%; top:50%; width:20px; height:20px; margin:-10px 0 0 -10px; border-radius:50%; background:var(--base); animation:basePulse 2.1s ease-out infinite; }
+  .base-dot { position:absolute; left:50%; top:50%; width:28px; height:28px; margin:-14px 0 0 -14px; border-radius:50%; background:var(--base); border:3px solid #fff; box-shadow:0 2px 7px rgba(0,0,0,.4); display:grid; place-items:center; line-height:1; }
+  @keyframes basePulse { 0%{ box-shadow:0 0 0 0 rgba(58,47,43,.5);} 70%{ box-shadow:0 0 0 16px rgba(58,47,43,0);} 100%{ box-shadow:0 0 0 0 rgba(58,47,43,0);} }
+
+  @media (max-width:720px){
+    .map-card { flex-direction:column; }
+    #map { height:56vh; }
+    .legend { width:auto; flex:0 0 auto; flex-direction:row; flex-wrap:wrap; border-left:0; border-top:1px solid var(--line); }
+    .leg { width:auto; }
+    .legend-title { width:100%; }
+    .leg-reset { margin-top:0; }
+  }
+  @media (max-width:560px){
+    .hero { padding:44px 18px 34px; }
+    .time { flex-basis:50px; }
+    .days { grid-template-columns:1fr; }
+    .brand-name { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 48 48" fill="none" role="img" aria-label="Xina">
+      <defs><clipPath id="cnClip"><circle cx="24" cy="24" r="20"/></clipPath></defs>
+      <circle cx="24" cy="24" r="21.5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+      <g clip-path="url(#cnClip)">
+        <circle cx="15" cy="14" r="3.2" fill="currentColor"/>
+        <path d="M24 8 L33 15 L15 15 Z" fill="currentColor"/>
+        <path d="M11 22 L37 22 L33 18 L15 18 Z" fill="currentColor"/>
+        <path d="M8 32 L40 32 L35 27 L13 27 Z" fill="currentColor"/>
+        <rect x="21" y="34" width="6" height="10" fill="currentColor"/>
+        <path d="M4 44 L44 44" stroke="currentColor" stroke-width="2"/>
+      </g>
+    </svg>
+    <span class="brand-name"><b>Xina</b><small>2026</small></span>
+  </div>
+  <div class="langs">
+    <a class="lang-btn nav-btn" href="organitzacio.html" data-i18n="navOrg">Organització</a>
+    <button type="button" class="lang-btn" data-lang="ca">CA</button>
+    <button type="button" class="lang-btn" data-lang="es">ES</button>
+    <button type="button" class="lang-btn" data-lang="en">EN</button>
+  </div>
+  <div class="hero-inner">
+    <span class="kicker" data-i18n="kicker">Beijing · Xi'an · Zhangjiajie · Fenghuang · Shanghai · 2026</span>
+    <h1>Xina</h1>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section id="map-section">
+    <h2 class="sec-title" data-i18n="mapTitle">El mapa</h2>
+    <p class="sec-sub" data-i18n="mapSub">Clica un <b>dia</b> a la llegenda per veure'l sol amb el seu recorregut; clica un <b>punt</b> per obrir-lo a Google Maps.</p>
+    <div class="map-card">
+      <div id="map"></div>
+      <div class="legend">
+        <span class="legend-title" data-i18n="legShow">Mostra</span>
+        <button type="button" class="leg" data-day="1" data-i18n="legD1"><i class="dot" style="background:var(--d1)"></i> Dia 1 · dv 28 · Beijing</button>
+        <button type="button" class="leg" data-day="2" data-i18n="legD2"><i class="dot" style="background:var(--d2)"></i> Dia 2 · ds 29 · Beijing</button>
+        <button type="button" class="leg" data-day="3" data-i18n="legD3"><i class="dot" style="background:var(--d3)"></i> Dia 3 · dg 30 · Muralla</button>
+        <button type="button" class="leg" data-day="4" data-i18n="legD4"><i class="dot" style="background:var(--d4)"></i> Dia 4 · dl 31 · Xi'an</button>
+        <button type="button" class="leg" data-day="5" data-i18n="legD5"><i class="dot" style="background:var(--d5)"></i> Dia 5 · dt 1 · Tianmen</button>
+        <button type="button" class="leg" data-day="6" data-i18n="legD6"><i class="dot" style="background:var(--d6)"></i> Dia 6 · dc 2 · Avatar</button>
+        <button type="button" class="leg" data-day="7" data-i18n="legD7"><i class="dot" style="background:var(--d7)"></i> Dia 7 · dj 3 · Fenghuang</button>
+        <button type="button" class="leg" data-day="8" data-i18n="legD8"><i class="dot" style="background:var(--d8)"></i> Dia 8 · dv 4 · a Shanghai</button>
+        <button type="button" class="leg" data-day="9" data-i18n="legD9"><i class="dot" style="background:var(--d9)"></i> Dia 9 · ds 5 · Shanghai</button>
+        <button type="button" class="leg" data-day="10" data-i18n="legD10"><i class="dot" style="background:var(--d10)"></i> Dia 10 · dg 6 · Shanghai</button>
+        <button type="button" class="leg leg-reset" data-day="0" data-i18n="legAll">Tot el viatge</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-title" data-i18n="itinTitle">Itinerari dia a dia</h2>
+    <p class="sec-sub" data-i18n="itinSub">Deu dies entre la Xina imperial, les muntanyes de Hunan i Shanghai.</p>
+
+    <div class="days">
+
+      <article class="day" data-day="1">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d1)">1</span>
+          <div class="day-titles"><span class="dow" data-i18n="d1dow">Divendres 28 d'agost</span><h3 data-i18n="d1h3">Arribada a Beijing</h3></div>
+          <span class="day-move" data-i18n="mvPlane">✈ vol + taxi</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Beijing+Capital+International+Airport/Legendale+Hotel+Beijing" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time">12:00</span><div class="stop-body" data-i18n="d1s1"><a href="https://www.google.com/maps/search/Beijing+Capital+International+Airport" target="_blank" rel="noopener" class="name">Arribada a l'aeroport de Beijing</a>, tràmits d'entrada i recollida d'equipatge.</div></li>
+          <li><span class="time">13:00</span><div class="stop-body" data-i18n="d1s2"><span class="name">Cap a l'hotel</span> en taxi o Didi (45-60 min).</div></li>
+          <li><span class="time">14:30</span><div class="stop-body" data-i18n="d1s3"><a href="https://www.google.com/maps/search/Legendale+Hotel+Beijing" target="_blank" rel="noopener" class="name">Legendale Hotel Beijing</a>, check-in i descans breu.</div></li>
+          <li><span class="time">15:15</span><div class="stop-body" data-i18n="d1s4"><span class="name">Dinar a prop de l'hotel</span>, dues opcions:
+            <ol class="options">
+              <li><a href="https://www.google.com/maps/search/Siji+Minfu+Roast+Duck+Wangfujing" target="_blank" rel="noopener">Sijiminfu Roast Duck</a> (Wangfujing, 10 min a peu) <span class="pk">· ànec a la pequinesa, ambient local</span></li>
+              <li><a href="https://www.google.com/maps/search/Xian+Lao+Man+Dumpling+Beijing" target="_blank" rel="noopener">Xian Lao Man Dumpling</a> <span class="pk">· dumplings casolans, més senzill</span></li>
+            </ol>
+          </div></li>
+          <li><span class="time">16:30</span><div class="stop-body" data-i18n="d1s5"><a href="https://www.google.com/maps/search/Wangfujing+Street+Beijing" target="_blank" rel="noopener" class="name">Wangfujing Street</a> a peu, el carrer principal amb ambient. Alternativa: veure abans el <a href="https://www.google.com/maps/search/Temple+of+Heaven+Beijing" target="_blank" rel="noopener">Temple del Cel</a> i després Wangfujing.</div></li>
+          <li><span class="time">19:30</span><div class="stop-body" data-i18n="d1s6"><a href="https://www.google.com/maps/search/Houhai+Beijing" target="_blank" rel="noopener" class="name">Houhai / Shichahai</a>, passeig pels llacs il·luminats. Tornada a l'hotel entre les 21:30 i les 22:00.</div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="houhai.jpg" alt="Houhai" loading="lazy"><figcaption>Houhai</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+      <article class="day" data-day="2">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d2)">2</span>
+          <div class="day-titles"><span class="dow" data-i18n="d2dow">Dissabte 29 d'agost</span><h3 data-i18n="d2h3">Beijing imperial</h3></div>
+          <span class="day-move" data-i18n="mvWalk">🚶 a peu · 8:30-17:30</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Forbidden+City,+Beijing/Jingshan+Park,+Beijing/Nanluoguxiang,+Beijing" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time">08:30</span><div class="stop-body" data-i18n="d2s1"><a href="https://www.google.com/maps/search/Forbidden+City+Beijing" target="_blank" rel="noopener" class="name">Ciutat Prohibida</a> amb visita guiada, el palau imperial més famós de la Xina: gairebé 500 anys de residència dels emperadors Ming i Qing i més de 9.000 estances. No perdre's la Plaça de l'Harmonia Suprema. Temps recomanat: 3-4 hores.
+            <div class="note" data-i18n="d2note"><b>Pendent:</b> contractar la visita guiada i reservar les entrades amb antelació des de la web oficial (l'accés és per reserva prèvia).</div>
+          </div></li>
+          <li><span class="time">12:30</span><div class="stop-body" data-i18n="d2s2"><a href="https://www.google.com/maps/search/Jingshan+Park+Beijing" target="_blank" rel="noopener" class="name">Parc Jingshan</a> (Colina del Carbó) o <a href="https://www.google.com/maps/search/Beihai+Park+Beijing" target="_blank" rel="noopener">Parc Beihai</a>, just darrere de la Ciutat Prohibida. Pujar al pavelló de Wanchun són pocs minuts i dona la millor panoràmica del palau. Obert 6:00-21:00, entrada 2-5 CNY. Abans, els jardins i la <a href="https://www.google.com/maps/search/Tiananmen+Square+Beijing" target="_blank" rel="noopener">plaça de Tiananmen</a> al davant.</div></li>
+          <li><span class="time" data-i18n="tDinar">Dinar</span><div class="stop-body" data-i18n="d2s3"><span class="name">Dinar per la zona</span> i descans a l'hora forta de calor.</div></li>
+          <li><span class="time">17:00</span><div class="stop-body" data-i18n="d2s4"><a href="https://www.google.com/maps/search/Nanluoguxiang+Beijing" target="_blank" rel="noopener" class="name">Nanluoguxiang</a>, passeig pel carrer i pels hutongs laterals, que són els més autèntics.</div></li>
+          <li><span class="time">18:30</span><div class="stop-body" data-i18n="d2s5"><span class="name">Sopar</span> per la zona dels hutongs o a Wangfujing Street.</div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="ciutatprohibida.jpg" alt="Ciutat Prohibida" loading="lazy"><figcaption data-i18n="capFC">Ciutat Prohibida</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+      <article class="day" data-day="3">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d3)">3</span>
+          <div class="day-titles"><span class="dow" data-i18n="d3dow">Diumenge 30 d'agost</span><h3 data-i18n="d3h3">La Muralla i tren bala a Xi'an</h3></div>
+          <span class="day-move" data-i18n="mvTrain">🚄 152 km + tren bala</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Legendale+Hotel+Beijing/Mutianyu+Great+Wall/Beijing+West+Railway+Station" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time">06:30</span><div class="stop-body" data-i18n="d3s1"><span class="name">Sortida del Legendale</span> en vehicle privat (minivan, 5 persones). Trajecte d'1h30 a 1h45.
+            <div class="note" data-i18n="d3note1"><b>Contractat:</b> guia-taxi que ens porta de l'hotel a la Muralla i de la Muralla al tren bala.</div>
+          </div></li>
+          <li><span class="time">08:30</span><div class="stop-body" data-i18n="d3s2"><a href="https://www.google.com/maps/search/Mutianyu+Great+Wall" target="_blank" rel="noopener" class="name">Muralla de Mutianyu</a>, a uns 90 km de Beijing. Entrada al recinte i bus llançadora. Pujada amb <b>telecabina</b> (no el telefèric, que és més lent) fins a la torre 14.</div></li>
+          <li><span class="time">09:00</span><div class="stop-body" data-i18n="d3s3"><span class="name">Recorregut a peu</span>: torre 14 → torre 20 (anada i tornada parcial), 1h30-2h a ritme tranquil amb parades per fotos. Baixada amb <b>tobogan</b> des de la zona de la torre 6. Temps total: 2h30-3h.</div></li>
+          <li><span class="time">11:30</span><div class="stop-body" data-i18n="d3s4"><span class="name">Sortida de la Muralla</span>, just abans de l'arribada massiva de grups turístics. Tornada a Beijing d'1h30 a 1h45: arribada a l'estació entre les 13:00 i les 14:00, no més tard.</div></li>
+          <li><span class="time">15:05</span><div class="stop-body" data-i18n="d3s5"><a href="https://www.google.com/maps/search/Beijing+West+Railway+Station" target="_blank" rel="noopener" class="name">Tren bala G323 cap a Xi'an</a><span class="tag warn">Clau</span> el taxista ens ha de deixar a l'entrada correcta i acompanyar-nos fins al primer control de seguretat. Buscar el tren <b>G323</b> al panell electrònic i passaport a la mà: el demanen diverses vegades fins a pujar al tren.</div></li>
+          <li><span class="time">22:10</span><div class="stop-body" data-i18n="d3s6"><a href="https://www.google.com/maps/search/Xi+an+North+Railway+Station" target="_blank" rel="noopener" class="name">Arribada a Xi'an</a> i taxi a l'hotel (30-40 min). Check-in cap a les 22:45-23:00.</div></li>
+          <li><span class="time" data-i18n="tNit">Nit</span><div class="stop-body" data-i18n="d3s7"><a href="https://www.google.com/maps/search/Bell+Tower+Xi+an" target="_blank" rel="noopener" class="name">Bell Tower</a> amb espectacle de llums i, a 5-10 min a peu, el <a href="https://www.google.com/maps/search/Muslim+Quarter+Xi+an" target="_blank" rel="noopener">Muslim Quarter</a> per sopar.
+            <ul class="subs">
+              <li>Roujiamo (l'hamburguesa xinesa)</li>
+              <li>Biang Biang noodles</li>
+              <li>Yangrou Paomo (sopa de xai)</li>
+              <li>Persimmon cake (pastís de caqui)</li>
+              <li>Compte amb les broquetes: poden ser picants</li>
+            </ul>
+          </div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="muralla.jpg" alt="Mutianyu" loading="lazy"><figcaption data-i18n="capWall">Muralla de Mutianyu</figcaption></figure>
+          <figure><img src="xian.jpg" alt="Bell Tower Xi'an" loading="lazy"><figcaption data-i18n="capBell">Bell Tower, Xi'an</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+      <article class="day" data-day="4">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d4)">4</span>
+          <div class="day-titles"><span class="dow" data-i18n="d4dow">Dilluns 31 d'agost</span><h3 data-i18n="d4h3">Guerrers de Xi'an i vol a Zhangjiajie</h3></div>
+          <span class="day-move" data-i18n="mvPlane2">✈ 119 km + vol</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Bell+Tower+Xi+an/Terracotta+Army/Xi+an+Xianyang+International+Airport" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time">08:00</span><div class="stop-body" data-i18n="d4s1"><span class="name">Check-out</span> (maletes a recepció) i esmorzar abans de les 8h.</div></li>
+          <li><span class="time">08:30</span><div class="stop-body" data-i18n="d4s2"><span class="name">Ens recull el taxi</span> per anar als guerrers.</div></li>
+          <li><span class="time">09:45</span><div class="stop-body" data-i18n="d4s3"><a href="https://www.google.com/maps/search/Terracotta+Army+Museum+Xi+an" target="_blank" rel="noopener" class="name">Guerrers de terracota</a>, l'exèrcit del primer emperador. Tornada a l'hotel entre les 12:30 i les 13:00.</div></li>
+          <li><span class="time" data-i18n="tTarda">Tarda</span><div class="stop-body" data-i18n="d4s4"><span class="name">Passeig lliure per Xi'an</span> fins a les 18h. Cal fer un berenar-sopar abans o al mateix aeroport.</div></li>
+          <li><span class="time">18:00</span><div class="stop-body" data-i18n="d4s5"><a href="https://www.google.com/maps/search/Xi+an+Xianyang+International+Airport" target="_blank" rel="noopener" class="name">Cap a l'aeroport de Xi'an</a>, uns 38-40 km. Taxi o DiDi de 45-60 min segons trànsit, 90-130 RMB.</div></li>
+          <li><span class="time" data-i18n="tNit">Nit</span><div class="stop-body" data-i18n="d4s6"><a href="https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport" target="_blank" rel="noopener" class="name">Arribada a Zhangjiajie (DYG)</a> i taxi a l'<a href="https://www.google.com/maps/search/Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain" target="_blank" rel="noopener">Hampton by Hilton Tianmen Mountain</a>: 4-6 km, 10-15 min, 15-25 RMB (2-3 €). L'hotel és a prop del telefèric per la visita de demà.</div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="guerrers.jpg" alt="Guerrers de terracota" loading="lazy"><figcaption data-i18n="capTerra">Guerrers de terracota</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+      <article class="day" data-day="5">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d5)">5</span>
+          <div class="day-titles"><span class="dow" data-i18n="d5dow">Dimarts 1 de setembre</span><h3 data-i18n="d5h3">Tianmen Mountain</h3></div>
+          <span class="day-move" data-i18n="mvCable">🚡 telefèric + 36 km</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain/Tianmen+Mountain/Wulingyuan" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time">08:00</span><div class="stop-body" data-i18n="d5s1"><a href="https://www.google.com/maps/search/Tianmen+Mountain+Cableway+Station" target="_blank" rel="noopener" class="name">Estació del telefèric</a>, a 15 min caminant de l'hotel. Cal ser-hi entre les 8 i les 9h. <b>Línia A</b>, tiquets ja comprats a Lily (e-tiquet).</div></li>
+          <li><span class="time" data-i18n="tRuta">Ruta A</span><div class="stop-body" data-i18n="d5s2"><span class="name">El recorregut recomanat</span>: pujada amb el telefèric llarg des del centre de Zhangjiajie fins al cim (més de 7 km, un dels més llargs del món). Part alta amb miradors i passarel·les. Baixada amb escales mecàniques fins a la <b>Porta del Cel</b>, on es pot triar entre els 999 esglaons o les escales mecàniques. A la base, telefèric exprés i bus llançadora de tornada al centre.
+            <ul class="subs">
+              <li>Carretera de les 99 corbes (es fa amb bus, dins del trajecte)</li>
+              <li>Passarel·les de vidre sobre els penya-segats (entrada extra econòmica)</li>
+              <li>Temple budista Tianmenshan al cim</li>
+            </ul>
+            Visita completa: 6-8 hores. Només la part superior: unes 3 hores caminant.
+            <div class="note" data-i18n="d5note">Portar calçat còmode, aigua, protecció solar i roba lleugera. Hi ha força caminada i desnivell, però es pot fer amb escales mecàniques. A l'estiu: calor, humitat i més gent.</div>
+          </div></li>
+          <li><span class="time" data-i18n="tVespre">Vespre</span><div class="stop-body" data-i18n="d5s3"><a href="https://www.google.com/maps/search/Wulingyuan" target="_blank" rel="noopener" class="name">Trasllat a Wulingyuan</a> (uns 36 km, 40-50 min) i nit allà, a les portes del parc.</div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="tianmen.jpg" alt="Tianmen Mountain" loading="lazy"><figcaption data-i18n="capTianmen">La Porta del Cel</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+      <article class="day" data-day="6">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d6)">6</span>
+          <div class="day-titles"><span class="dow" data-i18n="d6dow">Dimecres 2 de setembre</span><h3 data-i18n="d6h3">Les muntanyes d'Avatar</h3></div>
+          <span class="day-move" data-i18n="mvPark">🏞 dins del parc</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Wulingyuan/Zhangjiajie+National+Forest+Park" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time" data-i18n="tDia">Tot el dia</span><div class="stop-body" data-i18n="d6s1"><a href="https://www.google.com/maps/search/Zhangjiajie+National+Forest+Park" target="_blank" rel="noopener" class="name">Parc Nacional de Zhangjiajie</a>, els pilars de pedra que van inspirar les muntanyes flotants d'<i>Avatar</i>. Zones clàssiques: <a href="https://www.google.com/maps/search/Yuanjiajie" target="_blank" rel="noopener">Yuanjiajie</a> (la muntanya Hallelujah i el pont del Primer Pont sota el Cel) i Tianzi Shan.
+            <div class="note" data-i18n="d6note"><b>Per concretar:</b> quines zones del parc fem i com hi pugem (ascensor de Bailong, telefèric o bus). L'allotjament és amb experiència del te i visita al parc.</div>
+          </div></li>
+          <li><span class="time" data-i18n="tVespre">Vespre</span><div class="stop-body" data-i18n="d6s2"><span class="name">Wulingyuan de nit</span>, carrers il·luminats, terrasses i restaurants de cuina de Hunan: plats de muntanya, bolets, peix de riu, verdures fresques i carns condimentades, servits al centre de la taula per compartir. Després, passeig tranquil pel centre abans de tornar al SANHE Hotel.
+            <ul class="subs">
+              <li>Yinxiang Laozao (印象老灶) · Hunan tradicional · 80-120 ¥ · 5-8 min</li>
+              <li>Grandma's Kitchen (外婆厨房) · casolà · 70-110 ¥ · 5 min</li>
+              <li>Xiangxi Folk Restaurant (湘西人家) · regió de Xiangxi · 80-130 ¥ · 8 min</li>
+              <li>Hefu Noodle (和府捞面) · noodles artesans · 35-60 ¥ · 5 min</li>
+              <li>Local BBQ Street · broquetes i brasa · 50-100 ¥ · 5-10 min</li>
+            </ul>
+            Plats típics: vedella amb pebre verd (picant), bolets de muntanya, peix del riu amb salsa de Hunan, dumplings artesans, albergínia rostida amb all, verdures saltejades, noodles de la regió i cervesa local o te de gessamí.
+          </div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="avatar.jpg" alt="Zhangjiajie" loading="lazy"><figcaption data-i18n="capAvatar">Pilars de Zhangjiajie</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+      <article class="day" data-day="7">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d7)">7</span>
+          <div class="day-titles"><span class="dow" data-i18n="d7dow">Dijous 3 de setembre</span><h3 data-i18n="d7h3">Cap a Fenghuang</h3></div>
+          <span class="day-move" data-i18n="mvVan">🚐 222 km</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Wulingyuan/Furong+Ancient+Town/Fenghuang+Ancient+Town" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time" data-i18n="tOpcio">Decisió</span><div class="stop-body" data-i18n="d7s1"><span class="name">Dues maneres de fer el dia</span>, encara per decidir:
+            <ol class="options">
+              <li><b>Amb parada a Furong</b> · 08:00 sortida de Wulingyuan en minivan privada (2h30-3h), 11:00 arribada a <a href="https://www.google.com/maps/search/Furong+Ancient+Town" target="_blank" rel="noopener">Furong</a>, visita del poble de les cascades i dinar tranquil, 14:30 sortida cap a Fenghuang (2h-2h30) i arribada a les 17:00-17:30.</li>
+              <li><b>Directes a Fenghuang</b> · arribada cap a les 13:30 i tarda sencera al poble. És l'opció recomanada: l'hotel és molt bo i val la pena gaudir-lo sense presses.</li>
+            </ol>
+          </div></li>
+          <li><span class="time">13:30</span><div class="stop-body" data-i18n="d7s2"><a href="https://www.google.com/maps/search/Fenghuang+Ancient+Town" target="_blank" rel="noopener" class="name">Arribada a Fenghuang</a> i check-in. Si no hem dinat pel camí, val la pena dinar abans d'entrar a l'hotel: <a href="https://www.google.com/maps/search/Phoenix+Riverside+Restaurant+Fenghuang" target="_blank" rel="noopener">Phoenix Riverside Restaurant</a> (cuina de Hunan amb vistes al riu, 80-120 ¥). Si arribem tard i sense gana, un àpat lleuger (noodles o dumplings) i deixar el sopar com a àpat principal.</div></li>
+          <li><span class="time">14:00</span><div class="stop-body" data-i18n="d7s3"><span class="name">Descans</span> i gaudir de la suite presidencial.</div></li>
+          <li><span class="time">16:00</span><div class="stop-body" data-i18n="d7s4"><span class="name">Centre històric</span>, passeig tranquil pel riu Tuojiang, el <a href="https://www.google.com/maps/search/Hong+Bridge+Fenghuang" target="_blank" rel="noopener">Hong Bridge</a> i els carrers antics. Cap a les 17:30, cafè o te en una terrassa davant del riu (prescindible).</div></li>
+          <li><span class="time">18:45</span><div class="stop-body" data-i18n="d7s5"><span class="name">L'encesa dels llums</span>, buscar un bon lloc per veure com s'il·lumina la ciutat. A les 19:15-19:45, passeig en barca pel riu Tuojiang si hi ha disponibilitat.</div></li>
+          <li><span class="time">20:00</span><div class="stop-body" data-i18n="d7s6"><a href="https://www.google.com/maps/search/Hongqiao+Riverside+Restaurant+Fenghuang" target="_blank" rel="noopener" class="name">Sopar amb vistes al riu</a>, Hongqiao Riverside Restaurant (terrassa, cuina local de bon nivell, 120-180 ¥): peix del riu, vedella amb pebre, bolets de muntanya, verdures saltejades i arròs fregit. A les 21:30, passeig nocturn pels carrers il·luminats i tornada a l'hotel.</div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="fenghuang.jpg" alt="Fenghuang" loading="lazy"><figcaption data-i18n="capFH">Fenghuang</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+      <article class="day" data-day="8">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d8)">8</span>
+          <div class="day-titles"><span class="dow" data-i18n="d8dow">Divendres 4 de setembre</span><h3 data-i18n="d8h3">Fenghuang → Shanghai</h3></div>
+          <span class="day-move" data-i18n="mvPlane3">✈ 188 km + vol</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Fenghuang+Ancient+Town/Zhangjiajie+Hehua+International+Airport" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time">08:30</span><div class="stop-body" data-i18n="d8s1"><span class="name">Despertar sense presses</span> i esmorzar a l'hotel a les 9:00. A les 10:00, una estona més de suite.</div></li>
+          <li><span class="time">11:00</span><div class="stop-body" data-i18n="d8s2"><span class="name">Últim passeig pel riu</span> i compres de records. Dinar a les 12:30.</div></li>
+          <li><span class="time">14:00</span><div class="stop-body" data-i18n="d8s3"><a href="https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport" target="_blank" rel="noopener" class="name">Sortida cap a l'aeroport de Zhangjiajie</a>, unes 3 hores de trajecte.</div></li>
+          <li><span class="time">22:40</span><div class="stop-body" data-i18n="d8s4"><a href="https://www.google.com/maps/search/Shanghai+Pudong+International+Airport" target="_blank" rel="noopener" class="name">Arribada a Shanghai Pudong (PVG)</a>. Taxi cap a l'<a href="https://www.google.com/maps/search/Atour+Hotel+Shanghai+Bund+Land+Plaza" target="_blank" rel="noopener">Atour Hotel Shanghai Bund Land Plaza</a> (Henan Middle Road / People's Square), 45-50 min. Check-in cap a les 00:30.</div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="bund.jpg" alt="Shanghai" loading="lazy"><figcaption>Shanghai</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+      <article class="day" data-day="9">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d9)">9</span>
+          <div class="day-titles"><span class="dow" data-i18n="d9dow">Dissabte 5 de setembre</span><h3 data-i18n="d9h3">Shanghai tradicional</h3></div>
+          <span class="day-move" data-i18n="mvMetro">🚇 metro i taxi</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Yu+Garden+Shanghai/AP+Plaza+Shanghai/The+Bund+Shanghai" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time">09:30</span><div class="stop-body" data-i18n="d9s1"><a href="https://www.google.com/maps/search/Yu+Garden+Shanghai" target="_blank" rel="noopener" class="name">Jardí Yuyuan</a> (豫园, 279 Fangbang Middle Road), passeig pel jardí imperial i després el Yuyuan Bazaar: carrers tradicionals, botigues, cases antigues, te i dolços.</div></li>
+          <li><span class="time">12:15</span><div class="stop-body" data-i18n="d9s2"><a href="https://www.google.com/maps/search/Nanxiang+Steamed+Bun+Restaurant+Yu+Garden" target="_blank" rel="noopener" class="name">Nanxiang Steamed Bun</a> (85 Yu Garden Road), el restaurant més famós de Shanghai per als <b>xiaolongbao</b> plens de brou. També dumplings de gambes, arròs fregit i te de gessamí. 15-25 € per persona.</div></li>
+          <li><span class="time">14:30</span><div class="stop-body" data-i18n="d9s3"><a href="https://www.google.com/maps/search/AP+Plaza+Shanghai+Science+and+Technology+Museum" target="_blank" rel="noopener" class="name">AP Plaza Market</a> (estació Science &amp; Technology Museum), el millor lloc del viatge per comprar: bosses, sabatilles, roba, maletes i records. Reservar-hi temps i regatejar. Fins a les 16:30.</div></li>
+          <li><span class="time">17:00</span><div class="stop-body" data-i18n="d9s4"><span class="name">Tornada a l'hotel</span> per deixar les compres i descansar una estona. També podem quedar-nos per la zona i sopar allà.</div></li>
+          <li><span class="time">18:45</span><div class="stop-body" data-i18n="d9s5"><a href="https://www.google.com/maps/search/Lost+Heaven+Shanghai+Gaoyou+Road" target="_blank" rel="noopener" class="name">Sopar a Lost Heaven</a> (38 Gaoyou Road), un dels restaurants més ben valorats de Shanghai, cuina de Yunnan i ambient elegant. 25-35 € per persona.</div></li>
+          <li><span class="time">20:30</span><div class="stop-body" data-i18n="d9s6"><a href="https://www.google.com/maps/search/Shiliupu+Wharf+Shanghai" target="_blank" rel="noopener" class="name">Creuer nocturn pel riu Huangpu</a><span class="tag">Imprescindible</span> sortida des de Shiliupu Wharf (十六铺码头), 50-60 minuts. És el millor moment per veure l'Oriental Pearl Tower, la Shanghai Tower, la Jin Mao, el World Financial Center i el Bund.</div></li>
+          <li><span class="time">22:00</span><div class="stop-body" data-i18n="d9s7"><a href="https://www.google.com/maps/search/The+Bund+Shanghai" target="_blank" rel="noopener" class="name">Passeig pel Bund</a> (Zhongshan East 1st Road) per gaudir de l'skyline, i tornada caminant o en taxi a l'hotel.</div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="yuyuan.jpg" alt="Jardí Yuyuan" loading="lazy"><figcaption data-i18n="capYu">Jardí Yuyuan</figcaption></figure>
+          <figure><img src="bund.jpg" alt="The Bund" loading="lazy"><figcaption>The Bund</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+      <article class="day" data-day="10">
+        <div class="day-head">
+          <span class="day-num" style="background:var(--d10)">10</span>
+          <div class="day-titles"><span class="dow" data-i18n="d10dow">Diumenge 6 de setembre</span><h3 data-i18n="d10h3">Shanghai modern i vol de tornada</h3></div>
+          <span class="day-move" data-i18n="mvHome">✈ vol 00:00</span>
+          <a class="day-route" href="https://www.google.com/maps/dir/Tianzifang+Shanghai/Xintiandi+Shanghai/Nanjing+Road+Shanghai/Shanghai+Pudong+International+Airport" target="_blank" rel="noopener" data-i18n="route">Ruta al mapa ↗</a>
+        </div>
+        <div class="day-body">
+        <ul class="stops">
+          <li><span class="time">10:00</span><div class="stop-body" data-i18n="d10s1"><a href="https://www.google.com/maps/search/Tianzifang+Shanghai" target="_blank" rel="noopener" class="name">Tianzifang</a> (Taikang Road), carrers estrets, galeries, artesania, botigues i cafeteries. Temps per comprar records.</div></li>
+          <li><span class="time">12:30</span><div class="stop-body" data-i18n="d10s2"><a href="https://www.google.com/maps/search/Din+Tai+Fung+Xintiandi+Shanghai" target="_blank" rel="noopener" class="name">Dinar a Din Tai Fung</a> (Xintiandi Style Shopping Centre): xiaolongbao, dumplings i cuina taiwanesa. 20-30 € per persona.</div></li>
+          <li><span class="time">14:00</span><div class="stop-body" data-i18n="d10s3"><a href="https://www.google.com/maps/search/Xintiandi+Shanghai" target="_blank" rel="noopener" class="name">Xintiandi</a> (Madang Road), la zona més elegant de Shanghai: botigues, terrasses i galeries. Temps per prendre un cafè.</div></li>
+          <li><span class="time">16:00</span><div class="stop-body" data-i18n="d10s4"><a href="https://www.google.com/maps/search/Nanjing+Road+Pedestrian+Street+Shanghai" target="_blank" rel="noopener" class="name">Nanjing Road</a>, temps lliure per passejar, entrar als grans magatzems i els últims records. Fins a les 18:30.</div></li>
+          <li><span class="time">18:30</span><div class="stop-body" data-i18n="d10s5"><span class="name">Tornada a l'hotel</span>, recollir maletes, dutxa i canviar-se de roba.</div></li>
+          <li><span class="time">19:45</span><div class="stop-body" data-i18n="d10s6"><span class="name">Últim sopar del viatge</span>: Lost Heaven (si no hi hem anat el dissabte) o Din Tai Fung si preferim repetir.</div></li>
+          <li><span class="time">21:30</span><div class="stop-body" data-i18n="d10s7"><a href="https://www.google.com/maps/search/Shanghai+Pudong+International+Airport" target="_blank" rel="noopener" class="name">Taxi cap a Pudong (PVG)</a><span class="tag warn">Just</span> 45-60 minuts de trajecte, arribada prevista a les 22:30 i vol internacional a les 00:00.</div></li>
+        </ul>
+        <div class="day-photos">
+          <figure><img src="tianzifang.jpg" alt="Tianzifang" loading="lazy"><figcaption>Tianzifang</figcaption></figure>
+        </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+</div>
+
+<footer data-i18n="footer">Xina · 28 d'agost – 6 de setembre de 2026 · fet per a la família<br>
+Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blank" rel="noopener">Wikimedia Commons</a>, CC BY-SA</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  /* ---------- language ---------- */
+  var INIT_LANG = 'ca';
+  try { INIT_LANG = localStorage.getItem('cn_lang') || 'ca'; } catch(e){}
+  if (['ca','es','en'].indexOf(INIT_LANG) < 0) INIT_LANG = 'ca';
+  var OPENMAPS = { ca:'Obrir a Google Maps ↗', es:'Abrir en Google Maps ↗', en:'Open in Google Maps ↗' };
+
+  var I18N = {
+    es: {
+      navOrg: "Organización",
+      kicker: "Beijing · Xi'an · Zhangjiajie · Fenghuang · Shanghai · 2026",
+      mapTitle: "El mapa",
+      mapSub: "Haz clic en un <b>día</b> de la leyenda para verlo solo con su recorrido; haz clic en un <b>punto</b> para abrirlo en Google Maps.",
+      legShow: "Mostrar",
+      legD1: '<i class="dot" style="background:var(--d1)"></i> Día 1 · vie 28 · Beijing',
+      legD2: '<i class="dot" style="background:var(--d2)"></i> Día 2 · sáb 29 · Beijing',
+      legD3: '<i class="dot" style="background:var(--d3)"></i> Día 3 · dom 30 · Muralla',
+      legD4: '<i class="dot" style="background:var(--d4)"></i> Día 4 · lun 31 · Xi\'an',
+      legD5: '<i class="dot" style="background:var(--d5)"></i> Día 5 · mar 1 · Tianmen',
+      legD6: '<i class="dot" style="background:var(--d6)"></i> Día 6 · mié 2 · Avatar',
+      legD7: '<i class="dot" style="background:var(--d7)"></i> Día 7 · jue 3 · Fenghuang',
+      legD8: '<i class="dot" style="background:var(--d8)"></i> Día 8 · vie 4 · a Shanghai',
+      legD9: '<i class="dot" style="background:var(--d9)"></i> Día 9 · sáb 5 · Shanghai',
+      legD10: '<i class="dot" style="background:var(--d10)"></i> Día 10 · dom 6 · Shanghai',
+      legAll: "Todo el viaje",
+      itinTitle: "Itinerario día a día",
+      itinSub: "Diez días entre la China imperial, las montañas de Hunan y Shanghai.",
+      route: "Ver ruta en el mapa ↗",
+      tDinar: "Comida", tTarda: "Tarde", tNit: "Noche", tVespre: "Tarde/noche", tRuta: "Ruta A", tDia: "Todo el día", tOpcio: "Decisión",
+      mvPlane: "✈ vuelo + taxi", mvWalk: "🚶 a pie · 8:30-17:30", mvTrain: "🚄 152 km + tren bala",
+      mvPlane2: "✈ 119 km + vuelo", mvCable: "🚡 teleférico + 36 km", mvPark: "🏞 dentro del parque",
+      mvVan: "🚐 222 km", mvPlane3: "✈ 188 km + vuelo", mvMetro: "🚇 metro y taxi", mvHome: "✈ vuelo 00:00",
+      capFC: "Ciudad Prohibida", capWall: "Muralla de Mutianyu", capBell: "Bell Tower, Xi'an",
+      capTerra: "Guerreros de terracota", capTianmen: "La Puerta del Cielo", capAvatar: "Pilares de Zhangjiajie",
+      capFH: "Fenghuang", capYu: "Jardín Yuyuan",
+      d1dow: "Viernes 28 de agosto", d1h3: "Llegada a Beijing",
+      d1s1: '<a href="https://www.google.com/maps/search/Beijing+Capital+International+Airport" target="_blank" rel="noopener" class="name">Llegada al aeropuerto de Beijing</a>, trámites de entrada y recogida de equipaje.',
+      d1s2: '<span class="name">Hacia el hotel</span> en taxi o Didi (45-60 min).',
+      d1s3: '<a href="https://www.google.com/maps/search/Legendale+Hotel+Beijing" target="_blank" rel="noopener" class="name">Legendale Hotel Beijing</a>, check-in y descanso breve.',
+      d1s4: '<span class="name">Comida cerca del hotel</span>, dos opciones:<ol class="options"><li><a href="https://www.google.com/maps/search/Siji+Minfu+Roast+Duck+Wangfujing" target="_blank" rel="noopener">Sijiminfu Roast Duck</a> (Wangfujing, 10 min a pie) <span class="pk">· pato a la pequinesa, ambiente local</span></li><li><a href="https://www.google.com/maps/search/Xian+Lao+Man+Dumpling+Beijing" target="_blank" rel="noopener">Xian Lao Man Dumpling</a> <span class="pk">· dumplings caseros, más sencillo</span></li></ol>',
+      d1s5: '<a href="https://www.google.com/maps/search/Wangfujing+Street+Beijing" target="_blank" rel="noopener" class="name">Wangfujing Street</a> a pie, la calle principal con ambiente. Alternativa: ver antes el <a href="https://www.google.com/maps/search/Temple+of+Heaven+Beijing" target="_blank" rel="noopener">Templo del Cielo</a> y después Wangfujing.',
+      d1s6: '<a href="https://www.google.com/maps/search/Houhai+Beijing" target="_blank" rel="noopener" class="name">Houhai / Shichahai</a>, paseo por los lagos iluminados. Vuelta al hotel entre las 21:30 y las 22:00.',
+      d2dow: "Sábado 29 de agosto", d2h3: "Beijing imperial",
+      d2s1: '<a href="https://www.google.com/maps/search/Forbidden+City+Beijing" target="_blank" rel="noopener" class="name">Ciudad Prohibida</a> con visita guiada, el palacio imperial más famoso de China: casi 500 años de residencia de los emperadores Ming y Qing y más de 9.000 estancias. No perderse la Plaza de la Armonía Suprema. Tiempo recomendado: 3-4 horas.<div class="note"><b>Pendiente:</b> contratar la visita guiada y reservar las entradas con antelación desde la web oficial (el acceso es por reserva previa).</div>',
+      d2s2: '<a href="https://www.google.com/maps/search/Jingshan+Park+Beijing" target="_blank" rel="noopener" class="name">Parque Jingshan</a> (Colina del Carbón) o <a href="https://www.google.com/maps/search/Beihai+Park+Beijing" target="_blank" rel="noopener">Parque Beihai</a>, justo detrás de la Ciudad Prohibida. Subir al pabellón de Wanchun lleva pocos minutos y da la mejor panorámica del palacio. Abierto 6:00-21:00, entrada 2-5 CNY. Antes, los jardines y la <a href="https://www.google.com/maps/search/Tiananmen+Square+Beijing" target="_blank" rel="noopener">plaza de Tiananmen</a> enfrente.',
+      d2s3: '<span class="name">Comida por la zona</span> y descanso en la hora fuerte de calor.',
+      d2s4: '<a href="https://www.google.com/maps/search/Nanluoguxiang+Beijing" target="_blank" rel="noopener" class="name">Nanluoguxiang</a>, paseo por la calle y por los hutongs laterales, que son los más auténticos.',
+      d2s5: '<span class="name">Cena</span> por la zona de los hutongs o en Wangfujing Street.',
+      d3dow: "Domingo 30 de agosto", d3h3: "La Muralla y tren bala a Xi'an",
+      d3s1: '<span class="name">Salida del Legendale</span> en vehículo privado (minivan, 5 personas). Trayecto de 1h30 a 1h45.<div class="note"><b>Contratado:</b> guía-taxi que nos lleva del hotel a la Muralla y de la Muralla al tren bala.</div>',
+      d3s2: '<a href="https://www.google.com/maps/search/Mutianyu+Great+Wall" target="_blank" rel="noopener" class="name">Muralla de Mutianyu</a>, a unos 90 km de Beijing. Entrada al recinto y bus lanzadera. Subida en <b>telecabina</b> (no el teleférico, que es más lento) hasta la torre 14.',
+      d3s3: '<span class="name">Recorrido a pie</span>: torre 14 → torre 20 (ida y vuelta parcial), 1h30-2h a ritmo tranquilo con paradas para fotos. Bajada en <b>tobogán</b> desde la zona de la torre 6. Tiempo total: 2h30-3h.',
+      d3s4: '<span class="name">Salida de la Muralla</span>, justo antes de la llegada masiva de grupos turísticos. Vuelta a Beijing de 1h30 a 1h45: llegada a la estación entre las 13:00 y las 14:00, no más tarde.',
+      d3s5: '<a href="https://www.google.com/maps/search/Beijing+West+Railway+Station" target="_blank" rel="noopener" class="name">Tren bala G323 hacia Xi\'an</a><span class="tag warn">Clave</span> el taxista debe dejarnos en la entrada correcta y acompañarnos hasta el primer control de seguridad. Buscar el tren <b>G323</b> en el panel electrónico y pasaporte en mano: lo piden varias veces hasta subir al tren.',
+      d3s6: '<a href="https://www.google.com/maps/search/Xi+an+North+Railway+Station" target="_blank" rel="noopener" class="name">Llegada a Xi\'an</a> y taxi al hotel (30-40 min). Check-in hacia las 22:45-23:00.',
+      d3s7: '<a href="https://www.google.com/maps/search/Bell+Tower+Xi+an" target="_blank" rel="noopener" class="name">Bell Tower</a> con espectáculo de luces y, a 5-10 min a pie, el <a href="https://www.google.com/maps/search/Muslim+Quarter+Xi+an" target="_blank" rel="noopener">Muslim Quarter</a> para cenar.<ul class="subs"><li>Roujiamo (la hamburguesa china)</li><li>Biang Biang noodles</li><li>Yangrou Paomo (sopa de cordero)</li><li>Persimmon cake (pastel de caqui)</li><li>Cuidado con las brochetas: pueden ser picantes</li></ul>',
+      d4dow: "Lunes 31 de agosto", d4h3: "Guerreros de Xi'an y vuelo a Zhangjiajie",
+      d4s1: '<span class="name">Check-out</span> (maletas en recepción) y desayuno antes de las 8h.',
+      d4s2: '<span class="name">Nos recoge el taxi</span> para ir a los guerreros.',
+      d4s3: '<a href="https://www.google.com/maps/search/Terracotta+Army+Museum+Xi+an" target="_blank" rel="noopener" class="name">Guerreros de terracota</a>, el ejército del primer emperador. Vuelta al hotel entre las 12:30 y las 13:00.',
+      d4s4: '<span class="name">Paseo libre por Xi\'an</span> hasta las 18h. Hay que hacer una merienda-cena antes o en el propio aeropuerto.',
+      d4s5: '<a href="https://www.google.com/maps/search/Xi+an+Xianyang+International+Airport" target="_blank" rel="noopener" class="name">Hacia el aeropuerto de Xi\'an</a>, unos 38-40 km. Taxi o DiDi de 45-60 min según tráfico, 90-130 RMB.',
+      d4s6: '<a href="https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport" target="_blank" rel="noopener" class="name">Llegada a Zhangjiajie (DYG)</a> y taxi al <a href="https://www.google.com/maps/search/Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain" target="_blank" rel="noopener">Hampton by Hilton Tianmen Mountain</a>: 4-6 km, 10-15 min, 15-25 RMB (2-3 €). El hotel está cerca del teleférico para la visita de mañana.',
+      d5dow: "Martes 1 de septiembre", d5h3: "Tianmen Mountain",
+      d5s1: '<a href="https://www.google.com/maps/search/Tianmen+Mountain+Cableway+Station" target="_blank" rel="noopener" class="name">Estación del teleférico</a>, a 15 min caminando del hotel. Hay que estar allí entre las 8 y las 9h. <b>Línea A</b>, tickets ya comprados en Lily (e-ticket).',
+      d5s2: '<span class="name">El recorrido recomendado</span>: subida con el teleférico largo desde el centro de Zhangjiajie hasta la cima (más de 7 km, uno de los más largos del mundo). Parte alta con miradores y pasarelas. Bajada en escaleras mecánicas hasta la <b>Puerta del Cielo</b>, donde se puede elegir entre los 999 escalones o las escaleras mecánicas. En la base, teleférico exprés y bus lanzadera de vuelta al centro.<ul class="subs"><li>Carretera de las 99 curvas (se hace en bus, dentro del trayecto)</li><li>Pasarelas de cristal sobre los acantilados (entrada extra económica)</li><li>Templo budista Tianmenshan en la cima</li></ul>Visita completa: 6-8 horas. Solo la parte superior: unas 3 horas caminando.<div class="note">Llevar calzado cómodo, agua, protección solar y ropa ligera. Hay bastante caminata y desnivel, pero se puede hacer con escaleras mecánicas. En verano: calor, humedad y más gente.</div>',
+      d5s3: '<a href="https://www.google.com/maps/search/Wulingyuan" target="_blank" rel="noopener" class="name">Traslado a Wulingyuan</a> (unos 36 km, 40-50 min) y noche allí, a las puertas del parque.',
+      d6dow: "Miércoles 2 de septiembre", d6h3: "Las montañas de Avatar",
+      d6s1: '<a href="https://www.google.com/maps/search/Zhangjiajie+National+Forest+Park" target="_blank" rel="noopener" class="name">Parque Nacional de Zhangjiajie</a>, los pilares de piedra que inspiraron las montañas flotantes de <i>Avatar</i>. Zonas clásicas: <a href="https://www.google.com/maps/search/Yuanjiajie" target="_blank" rel="noopener">Yuanjiajie</a> (la montaña Hallelujah y el Primer Puente bajo el Cielo) y Tianzi Shan.<div class="note"><b>Por concretar:</b> qué zonas del parque hacemos y cómo subimos (ascensor de Bailong, teleférico o bus). El alojamiento es con experiencia del té y visita al parque.</div>',
+      d6s2: '<span class="name">Wulingyuan de noche</span>, calles iluminadas, terrazas y restaurantes de cocina de Hunan: platos de montaña, setas, pescado de río, verduras frescas y carnes condimentadas, servidos en el centro de la mesa para compartir. Después, paseo tranquilo por el centro antes de volver al SANHE Hotel.<ul class="subs"><li>Yinxiang Laozao (印象老灶) · Hunan tradicional · 80-120 ¥ · 5-8 min</li><li>Grandma\'s Kitchen (外婆厨房) · casero · 70-110 ¥ · 5 min</li><li>Xiangxi Folk Restaurant (湘西人家) · región de Xiangxi · 80-130 ¥ · 8 min</li><li>Hefu Noodle (和府捞面) · noodles artesanos · 35-60 ¥ · 5 min</li><li>Local BBQ Street · brochetas y brasa · 50-100 ¥ · 5-10 min</li></ul>Platos típicos: ternera con pimiento verde (picante), setas de montaña, pescado del río con salsa de Hunan, dumplings artesanos, berenjena asada con ajo, verduras salteadas, noodles de la región y cerveza local o té de jazmín.',
+      d7dow: "Jueves 3 de septiembre", d7h3: "Hacia Fenghuang",
+      d7s1: '<span class="name">Dos maneras de hacer el día</span>, aún por decidir:<ol class="options"><li><b>Con parada en Furong</b> · 08:00 salida de Wulingyuan en minivan privada (2h30-3h), 11:00 llegada a <a href="https://www.google.com/maps/search/Furong+Ancient+Town" target="_blank" rel="noopener">Furong</a>, visita del pueblo de las cascadas y comida tranquila, 14:30 salida hacia Fenghuang (2h-2h30) y llegada a las 17:00-17:30.</li><li><b>Directos a Fenghuang</b> · llegada hacia las 13:30 y tarde entera en el pueblo. Es la opción recomendada: el hotel es muy bueno y vale la pena disfrutarlo sin prisas.</li></ol>',
+      d7s2: '<a href="https://www.google.com/maps/search/Fenghuang+Ancient+Town" target="_blank" rel="noopener" class="name">Llegada a Fenghuang</a> y check-in. Si no hemos comido por el camino, vale la pena comer antes de entrar al hotel: <a href="https://www.google.com/maps/search/Phoenix+Riverside+Restaurant+Fenghuang" target="_blank" rel="noopener">Phoenix Riverside Restaurant</a> (cocina de Hunan con vistas al río, 80-120 ¥). Si llegamos tarde y sin hambre, una comida ligera (noodles o dumplings) y dejar la cena como comida principal.',
+      d7s3: '<span class="name">Descanso</span> y disfrutar de la suite presidencial.',
+      d7s4: '<span class="name">Centro histórico</span>, paseo tranquilo por el río Tuojiang, el <a href="https://www.google.com/maps/search/Hong+Bridge+Fenghuang" target="_blank" rel="noopener">Hong Bridge</a> y las calles antiguas. Hacia las 17:30, café o té en una terraza frente al río (prescindible).',
+      d7s5: '<span class="name">El encendido de las luces</span>, buscar un buen sitio para ver cómo se ilumina la ciudad. A las 19:15-19:45, paseo en barca por el río Tuojiang si hay disponibilidad.',
+      d7s6: '<a href="https://www.google.com/maps/search/Hongqiao+Riverside+Restaurant+Fenghuang" target="_blank" rel="noopener" class="name">Cena con vistas al río</a>, Hongqiao Riverside Restaurant (terraza, cocina local de buen nivel, 120-180 ¥): pescado del río, ternera con pimiento, setas de montaña, verduras salteadas y arroz frito. A las 21:30, paseo nocturno por las calles iluminadas y vuelta al hotel.',
+      d8dow: "Viernes 4 de septiembre", d8h3: "Fenghuang → Shanghai",
+      d8s1: '<span class="name">Despertar sin prisas</span> y desayuno en el hotel a las 9:00. A las 10:00, un rato más de suite.',
+      d8s2: '<span class="name">Último paseo por el río</span> y compras de recuerdos. Comida a las 12:30.',
+      d8s3: '<a href="https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport" target="_blank" rel="noopener" class="name">Salida hacia el aeropuerto de Zhangjiajie</a>, unas 3 horas de trayecto.',
+      d8s4: '<a href="https://www.google.com/maps/search/Shanghai+Pudong+International+Airport" target="_blank" rel="noopener" class="name">Llegada a Shanghai Pudong (PVG)</a>. Taxi hacia el <a href="https://www.google.com/maps/search/Atour+Hotel+Shanghai+Bund+Land+Plaza" target="_blank" rel="noopener">Atour Hotel Shanghai Bund Land Plaza</a> (Henan Middle Road / People\'s Square), 45-50 min. Check-in hacia las 00:30.',
+      d9dow: "Sábado 5 de septiembre", d9h3: "Shanghai tradicional",
+      d9s1: '<a href="https://www.google.com/maps/search/Yu+Garden+Shanghai" target="_blank" rel="noopener" class="name">Jardín Yuyuan</a> (豫园, 279 Fangbang Middle Road), paseo por el jardín imperial y después el Yuyuan Bazaar: calles tradicionales, tiendas, casas antiguas, té y dulces.',
+      d9s2: '<a href="https://www.google.com/maps/search/Nanxiang+Steamed+Bun+Restaurant+Yu+Garden" target="_blank" rel="noopener" class="name">Nanxiang Steamed Bun</a> (85 Yu Garden Road), el restaurante más famoso de Shanghai para los <b>xiaolongbao</b> llenos de caldo. También dumplings de gambas, arroz frito y té de jazmín. 15-25 € por persona.',
+      d9s3: '<a href="https://www.google.com/maps/search/AP+Plaza+Shanghai+Science+and+Technology+Museum" target="_blank" rel="noopener" class="name">AP Plaza Market</a> (estación Science &amp; Technology Museum), el mejor sitio del viaje para comprar: bolsos, zapatillas, ropa, maletas y recuerdos. Reservar tiempo y regatear. Hasta las 16:30.',
+      d9s4: '<span class="name">Vuelta al hotel</span> para dejar las compras y descansar un rato. También podemos quedarnos por la zona y cenar allí.',
+      d9s5: '<a href="https://www.google.com/maps/search/Lost+Heaven+Shanghai+Gaoyou+Road" target="_blank" rel="noopener" class="name">Cena en Lost Heaven</a> (38 Gaoyou Road), uno de los restaurantes mejor valorados de Shanghai, cocina de Yunnan y ambiente elegante. 25-35 € por persona.',
+      d9s6: '<a href="https://www.google.com/maps/search/Shiliupu+Wharf+Shanghai" target="_blank" rel="noopener" class="name">Crucero nocturno por el río Huangpu</a><span class="tag">Imprescindible</span> salida desde Shiliupu Wharf (十六铺码头), 50-60 minutos. Es el mejor momento para ver la Oriental Pearl Tower, la Shanghai Tower, la Jin Mao, el World Financial Center y el Bund.',
+      d9s7: '<a href="https://www.google.com/maps/search/The+Bund+Shanghai" target="_blank" rel="noopener" class="name">Paseo por el Bund</a> (Zhongshan East 1st Road) para disfrutar del skyline, y vuelta caminando o en taxi al hotel.',
+      d10dow: "Domingo 6 de septiembre", d10h3: "Shanghai moderno y vuelo de vuelta",
+      d10s1: '<a href="https://www.google.com/maps/search/Tianzifang+Shanghai" target="_blank" rel="noopener" class="name">Tianzifang</a> (Taikang Road), calles estrechas, galerías, artesanía, tiendas y cafeterías. Tiempo para comprar recuerdos.',
+      d10s2: '<a href="https://www.google.com/maps/search/Din+Tai+Fung+Xintiandi+Shanghai" target="_blank" rel="noopener" class="name">Comida en Din Tai Fung</a> (Xintiandi Style Shopping Centre): xiaolongbao, dumplings y cocina taiwanesa. 20-30 € por persona.',
+      d10s3: '<a href="https://www.google.com/maps/search/Xintiandi+Shanghai" target="_blank" rel="noopener" class="name">Xintiandi</a> (Madang Road), la zona más elegante de Shanghai: tiendas, terrazas y galerías. Tiempo para tomar un café.',
+      d10s4: '<a href="https://www.google.com/maps/search/Nanjing+Road+Pedestrian+Street+Shanghai" target="_blank" rel="noopener" class="name">Nanjing Road</a>, tiempo libre para pasear, entrar en los grandes almacenes y los últimos recuerdos. Hasta las 18:30.',
+      d10s5: '<span class="name">Vuelta al hotel</span>, recoger maletas, ducha y cambiarse de ropa.',
+      d10s6: '<span class="name">Última cena del viaje</span>: Lost Heaven (si no hemos ido el sábado) o Din Tai Fung si preferimos repetir.',
+      d10s7: '<a href="https://www.google.com/maps/search/Shanghai+Pudong+International+Airport" target="_blank" rel="noopener" class="name">Taxi hacia Pudong (PVG)</a><span class="tag warn">Justo</span> 45-60 minutos de trayecto, llegada prevista a las 22:30 y vuelo internacional a las 00:00.',
+      footer: 'China · 28 de agosto – 6 de septiembre de 2026 · hecho para la familia<br>Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blank" rel="noopener">Wikimedia Commons</a>, CC BY-SA'
+    },
+    en: {
+      navOrg: "Planning",
+      kicker: "Beijing · Xi'an · Zhangjiajie · Fenghuang · Shanghai · 2026",
+      mapTitle: "The map",
+      mapSub: "Click a <b>day</b> in the legend to see just that day and its route; click a <b>point</b> to open it in Google Maps.",
+      legShow: "Show",
+      legD1: '<i class="dot" style="background:var(--d1)"></i> Day 1 · Fri 28 · Beijing',
+      legD2: '<i class="dot" style="background:var(--d2)"></i> Day 2 · Sat 29 · Beijing',
+      legD3: '<i class="dot" style="background:var(--d3)"></i> Day 3 · Sun 30 · Great Wall',
+      legD4: '<i class="dot" style="background:var(--d4)"></i> Day 4 · Mon 31 · Xi\'an',
+      legD5: '<i class="dot" style="background:var(--d5)"></i> Day 5 · Tue 1 · Tianmen',
+      legD6: '<i class="dot" style="background:var(--d6)"></i> Day 6 · Wed 2 · Avatar',
+      legD7: '<i class="dot" style="background:var(--d7)"></i> Day 7 · Thu 3 · Fenghuang',
+      legD8: '<i class="dot" style="background:var(--d8)"></i> Day 8 · Fri 4 · to Shanghai',
+      legD9: '<i class="dot" style="background:var(--d9)"></i> Day 9 · Sat 5 · Shanghai',
+      legD10: '<i class="dot" style="background:var(--d10)"></i> Day 10 · Sun 6 · Shanghai',
+      legAll: "Whole trip",
+      itinTitle: "Day-by-day itinerary",
+      itinSub: "Ten days across imperial China, the mountains of Hunan and Shanghai.",
+      route: "Route on the map ↗",
+      tDinar: "Lunch", tTarda: "Afternoon", tNit: "Night", tVespre: "Evening", tRuta: "Route A", tDia: "All day", tOpcio: "Decision",
+      mvPlane: "✈ flight + taxi", mvWalk: "🚶 on foot · 8:30-17:30", mvTrain: "🚄 152 km + bullet train",
+      mvPlane2: "✈ 119 km + flight", mvCable: "🚡 cable car + 36 km", mvPark: "🏞 inside the park",
+      mvVan: "🚐 222 km", mvPlane3: "✈ 188 km + flight", mvMetro: "🚇 metro and taxi", mvHome: "✈ flight 00:00",
+      capFC: "Forbidden City", capWall: "Mutianyu Great Wall", capBell: "Bell Tower, Xi'an",
+      capTerra: "Terracotta Army", capTianmen: "Heaven's Gate", capAvatar: "Zhangjiajie pillars",
+      capFH: "Fenghuang", capYu: "Yu Garden",
+      d1dow: "Friday 28 August", d1h3: "Arrival in Beijing",
+      d1s1: '<a href="https://www.google.com/maps/search/Beijing+Capital+International+Airport" target="_blank" rel="noopener" class="name">Landing at Beijing airport</a>, immigration and baggage claim.',
+      d1s2: '<span class="name">To the hotel</span> by taxi or Didi (45-60 min).',
+      d1s3: '<a href="https://www.google.com/maps/search/Legendale+Hotel+Beijing" target="_blank" rel="noopener" class="name">Legendale Hotel Beijing</a>, check-in and a short rest.',
+      d1s4: '<span class="name">Lunch near the hotel</span>, two options:<ol class="options"><li><a href="https://www.google.com/maps/search/Siji+Minfu+Roast+Duck+Wangfujing" target="_blank" rel="noopener">Sijiminfu Roast Duck</a> (Wangfujing, 10 min walk) <span class="pk">· Peking duck, local atmosphere</span></li><li><a href="https://www.google.com/maps/search/Xian+Lao+Man+Dumpling+Beijing" target="_blank" rel="noopener">Xian Lao Man Dumpling</a> <span class="pk">· homemade dumplings, simpler</span></li></ol>',
+      d1s5: '<a href="https://www.google.com/maps/search/Wangfujing+Street+Beijing" target="_blank" rel="noopener" class="name">Wangfujing Street</a> on foot, the main street with plenty of buzz. Alternative: see the <a href="https://www.google.com/maps/search/Temple+of+Heaven+Beijing" target="_blank" rel="noopener">Temple of Heaven</a> first and Wangfujing after.',
+      d1s6: '<a href="https://www.google.com/maps/search/Houhai+Beijing" target="_blank" rel="noopener" class="name">Houhai / Shichahai</a>, a walk around the lit-up lakes. Back at the hotel between 21:30 and 22:00.',
+      d2dow: "Saturday 29 August", d2h3: "Imperial Beijing",
+      d2s1: '<a href="https://www.google.com/maps/search/Forbidden+City+Beijing" target="_blank" rel="noopener" class="name">Forbidden City</a> with a guided tour, the most famous imperial palace in China: nearly 500 years as the Ming and Qing emperors\' residence and over 9,000 rooms. Don\'t miss the Hall of Supreme Harmony. Recommended: 3-4 hours.<div class="note"><b>Pending:</b> book the guided tour and the tickets in advance on the official site (entry is by advance booking only).</div>',
+      d2s2: '<a href="https://www.google.com/maps/search/Jingshan+Park+Beijing" target="_blank" rel="noopener" class="name">Jingshan Park</a> (Coal Hill) or <a href="https://www.google.com/maps/search/Beihai+Park+Beijing" target="_blank" rel="noopener">Beihai Park</a>, right behind the Forbidden City. The climb to the Wanchun pavilion takes minutes and gives the best panorama of the palace. Open 6:00-21:00, entry 2-5 CNY. Before that, the gardens and <a href="https://www.google.com/maps/search/Tiananmen+Square+Beijing" target="_blank" rel="noopener">Tiananmen Square</a> opposite.',
+      d2s3: '<span class="name">Lunch nearby</span> and a rest through the hottest hours.',
+      d2s4: '<a href="https://www.google.com/maps/search/Nanluoguxiang+Beijing" target="_blank" rel="noopener" class="name">Nanluoguxiang</a>, a walk along the street and into the side hutongs, which are the most authentic.',
+      d2s5: '<span class="name">Dinner</span> around the hutongs or on Wangfujing Street.',
+      d3dow: "Sunday 30 August", d3h3: "The Great Wall and bullet train to Xi'an",
+      d3s1: '<span class="name">Leave the Legendale</span> in a private vehicle (minivan, 5 people). Journey of 1h30 to 1h45.<div class="note"><b>Booked:</b> guide-driver taking us from the hotel to the Wall and from the Wall to the bullet train.</div>',
+      d3s2: '<a href="https://www.google.com/maps/search/Mutianyu+Great+Wall" target="_blank" rel="noopener" class="name">Mutianyu Great Wall</a>, about 90 km from Beijing. Entry and shuttle bus. Go up by <b>gondola</b> (not the chairlift, which is slower) to tower 14.',
+      d3s3: '<span class="name">On foot</span>: tower 14 → tower 20 (partial there and back), 1h30-2h at an easy pace with photo stops. Down by <b>toboggan</b> from the tower 6 area. Total: 2h30-3h.',
+      d3s4: '<span class="name">Leave the Wall</span>, just before the tour groups arrive en masse. Back to Beijing in 1h30-1h45: at the station between 13:00 and 14:00, no later.',
+      d3s5: '<a href="https://www.google.com/maps/search/Beijing+West+Railway+Station" target="_blank" rel="noopener" class="name">Bullet train G323 to Xi\'an</a><span class="tag warn">Key</span> the driver must drop us at the right entrance and walk us to the first security check. Find train <b>G323</b> on the electronic board and keep passports in hand: they are checked several times before boarding.',
+      d3s6: '<a href="https://www.google.com/maps/search/Xi+an+North+Railway+Station" target="_blank" rel="noopener" class="name">Arrive in Xi\'an</a> and taxi to the hotel (30-40 min). Check-in around 22:45-23:00.',
+      d3s7: '<a href="https://www.google.com/maps/search/Bell+Tower+Xi+an" target="_blank" rel="noopener" class="name">Bell Tower</a> with its light show and, 5-10 min on foot, the <a href="https://www.google.com/maps/search/Muslim+Quarter+Xi+an" target="_blank" rel="noopener">Muslim Quarter</a> for dinner.<ul class="subs"><li>Roujiamo (the Chinese burger)</li><li>Biang Biang noodles</li><li>Yangrou Paomo (lamb soup)</li><li>Persimmon cake</li><li>Careful with the skewers: they can be spicy</li></ul>',
+      d4dow: "Monday 31 August", d4h3: "Xi'an warriors and flight to Zhangjiajie",
+      d4s1: '<span class="name">Check-out</span> (bags at reception) and breakfast before 8am.',
+      d4s2: '<span class="name">The taxi picks us up</span> to go to the warriors.',
+      d4s3: '<a href="https://www.google.com/maps/search/Terracotta+Army+Museum+Xi+an" target="_blank" rel="noopener" class="name">Terracotta Army</a>, the first emperor\'s army. Back at the hotel between 12:30 and 13:00.',
+      d4s4: '<span class="name">Free time around Xi\'an</span> until 6pm. We should have an early dinner before or at the airport itself.',
+      d4s5: '<a href="https://www.google.com/maps/search/Xi+an+Xianyang+International+Airport" target="_blank" rel="noopener" class="name">To Xi\'an airport</a>, about 38-40 km. Taxi or DiDi 45-60 min depending on traffic, 90-130 RMB.',
+      d4s6: '<a href="https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport" target="_blank" rel="noopener" class="name">Arrive in Zhangjiajie (DYG)</a> and taxi to the <a href="https://www.google.com/maps/search/Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain" target="_blank" rel="noopener">Hampton by Hilton Tianmen Mountain</a>: 4-6 km, 10-15 min, 15-25 RMB (€2-3). The hotel is near the cable car for tomorrow.',
+      d5dow: "Tuesday 1 September", d5h3: "Tianmen Mountain",
+      d5s1: '<a href="https://www.google.com/maps/search/Tianmen+Mountain+Cableway+Station" target="_blank" rel="noopener" class="name">Cable car station</a>, 15 min walk from the hotel. Be there between 8 and 9am. <b>Line A</b>, tickets already bought through Lily (e-ticket).',
+      d5s2: '<span class="name">The recommended route</span>: up on the long cable car from central Zhangjiajie to the summit (over 7 km, one of the longest in the world). Upper section with viewpoints and walkways. Down by escalators to <b>Heaven\'s Gate</b>, where you choose between the 999 steps or the escalators. At the base, express cable car and shuttle bus back to the centre.<ul class="subs"><li>The 99-bend road (done by bus, part of the trip)</li><li>Glass walkways over the cliffs (small extra ticket)</li><li>Tianmenshan Buddhist temple at the top</li></ul>Full visit: 6-8 hours. Upper section only: about 3 hours walking.<div class="note">Bring comfortable shoes, water, sun protection and light clothing. There is a fair bit of walking and elevation, but escalators are available. In summer: heat, humidity and more people.</div>',
+      d5s3: '<a href="https://www.google.com/maps/search/Wulingyuan" target="_blank" rel="noopener" class="name">Transfer to Wulingyuan</a> (about 36 km, 40-50 min) and overnight there, at the gates of the park.',
+      d6dow: "Wednesday 2 September", d6h3: "The Avatar mountains",
+      d6s1: '<a href="https://www.google.com/maps/search/Zhangjiajie+National+Forest+Park" target="_blank" rel="noopener" class="name">Zhangjiajie National Forest Park</a>, the stone pillars that inspired the floating mountains in <i>Avatar</i>. Classic areas: <a href="https://www.google.com/maps/search/Yuanjiajie" target="_blank" rel="noopener">Yuanjiajie</a> (Hallelujah Mountain and the First Bridge Under Heaven) and Tianzi Shan.<div class="note"><b>To confirm:</b> which areas of the park we do and how we go up (Bailong lift, cable car or bus). The hotel includes a tea experience and a park visit.</div>',
+      d6s2: '<span class="name">Wulingyuan at night</span>, lit-up streets, terraces and Hunan restaurants: mountain dishes, mushrooms, river fish, fresh vegetables and spiced meats, served in the middle of the table to share. Then a quiet stroll through the centre before heading back to the SANHE Hotel.<ul class="subs"><li>Yinxiang Laozao (印象老灶) · traditional Hunan · 80-120 ¥ · 5-8 min</li><li>Grandma\'s Kitchen (外婆厨房) · home cooking · 70-110 ¥ · 5 min</li><li>Xiangxi Folk Restaurant (湘西人家) · Xiangxi region · 80-130 ¥ · 8 min</li><li>Hefu Noodle (和府捞面) · handmade noodles · 35-60 ¥ · 5 min</li><li>Local BBQ Street · skewers and grill · 50-100 ¥ · 5-10 min</li></ul>Typical dishes: beef with green pepper (spicy), mountain mushrooms, river fish in Hunan sauce, handmade dumplings, roast aubergine with garlic, stir-fried vegetables, regional noodles and local beer or jasmine tea.',
+      d7dow: "Thursday 3 September", d7h3: "On to Fenghuang",
+      d7s1: '<span class="name">Two ways to do this day</span>, still to be decided:<ol class="options"><li><b>With a stop in Furong</b> · 08:00 leave Wulingyuan by private minivan (2h30-3h), 11:00 arrive in <a href="https://www.google.com/maps/search/Furong+Ancient+Town" target="_blank" rel="noopener">Furong</a>, visit the waterfall village and a relaxed lunch, 14:30 leave for Fenghuang (2h-2h30) arriving 17:00-17:30.</li><li><b>Straight to Fenghuang</b> · arriving around 13:30 with the whole afternoon in town. This is the recommended option: the hotel is excellent and worth enjoying without rushing.</li></ol>',
+      d7s2: '<a href="https://www.google.com/maps/search/Fenghuang+Ancient+Town" target="_blank" rel="noopener" class="name">Arrive in Fenghuang</a> and check in. If we haven\'t eaten on the way, it\'s worth having lunch before the hotel: <a href="https://www.google.com/maps/search/Phoenix+Riverside+Restaurant+Fenghuang" target="_blank" rel="noopener">Phoenix Riverside Restaurant</a> (Hunan cuisine with river views, 80-120 ¥). If we arrive late and not hungry, something light (noodles or dumplings) and keep dinner as the main meal.',
+      d7s3: '<span class="name">Rest</span> and enjoy the presidential suite.',
+      d7s4: '<span class="name">Old town</span>, a quiet walk along the Tuojiang river, the <a href="https://www.google.com/maps/search/Hong+Bridge+Fenghuang" target="_blank" rel="noopener">Hong Bridge</a> and the old streets. Around 17:30, coffee or tea on a riverside terrace (optional).',
+      d7s5: '<span class="name">The lights coming on</span>, find a good spot to watch the town light up. At 19:15-19:45, a boat ride on the Tuojiang if available.',
+      d7s6: '<a href="https://www.google.com/maps/search/Hongqiao+Riverside+Restaurant+Fenghuang" target="_blank" rel="noopener" class="name">Dinner with river views</a>, Hongqiao Riverside Restaurant (terrace, very good local cooking, 120-180 ¥): river fish, beef with pepper, mountain mushrooms, stir-fried vegetables and fried rice. At 21:30, a night walk through the lit streets and back to the hotel.',
+      d8dow: "Friday 4 September", d8h3: "Fenghuang → Shanghai",
+      d8s1: '<span class="name">A slow start</span> and breakfast at the hotel at 9:00. At 10:00, a bit more time in the suite.',
+      d8s2: '<span class="name">Last walk along the river</span> and souvenir shopping. Lunch at 12:30.',
+      d8s3: '<a href="https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport" target="_blank" rel="noopener" class="name">Leave for Zhangjiajie airport</a>, about a 3-hour drive.',
+      d8s4: '<a href="https://www.google.com/maps/search/Shanghai+Pudong+International+Airport" target="_blank" rel="noopener" class="name">Arrive at Shanghai Pudong (PVG)</a>. Taxi to the <a href="https://www.google.com/maps/search/Atour+Hotel+Shanghai+Bund+Land+Plaza" target="_blank" rel="noopener">Atour Hotel Shanghai Bund Land Plaza</a> (Henan Middle Road / People\'s Square), 45-50 min. Check-in around 00:30.',
+      d9dow: "Saturday 5 September", d9h3: "Traditional Shanghai",
+      d9s1: '<a href="https://www.google.com/maps/search/Yu+Garden+Shanghai" target="_blank" rel="noopener" class="name">Yu Garden</a> (豫园, 279 Fangbang Middle Road), a walk through the imperial garden and then the Yuyuan Bazaar: traditional streets, shops, old houses, tea and sweets.',
+      d9s2: '<a href="https://www.google.com/maps/search/Nanxiang+Steamed+Bun+Restaurant+Yu+Garden" target="_blank" rel="noopener" class="name">Nanxiang Steamed Bun</a> (85 Yu Garden Road), Shanghai\'s most famous place for <b>xiaolongbao</b> filled with broth. Also prawn dumplings, fried rice and jasmine tea. €15-25 per person.',
+      d9s3: '<a href="https://www.google.com/maps/search/AP+Plaza+Shanghai+Science+and+Technology+Museum" target="_blank" rel="noopener" class="name">AP Plaza Market</a> (Science &amp; Technology Museum station), the best shopping of the trip: bags, trainers, clothes, suitcases and souvenirs. Allow time and haggle. Until 16:30.',
+      d9s4: '<span class="name">Back to the hotel</span> to drop the shopping and rest a while. We could also stay in the area and eat there.',
+      d9s5: '<a href="https://www.google.com/maps/search/Lost+Heaven+Shanghai+Gaoyou+Road" target="_blank" rel="noopener" class="name">Dinner at Lost Heaven</a> (38 Gaoyou Road), one of Shanghai\'s best-rated restaurants, Yunnan cuisine and an elegant setting. €25-35 per person.',
+      d9s6: '<a href="https://www.google.com/maps/search/Shiliupu+Wharf+Shanghai" target="_blank" rel="noopener" class="name">Night cruise on the Huangpu river</a><span class="tag">Must-do</span> departing from Shiliupu Wharf (十六铺码头), 50-60 minutes. The best way to see the Oriental Pearl Tower, Shanghai Tower, Jin Mao, World Financial Center and the Bund.',
+      d9s7: '<a href="https://www.google.com/maps/search/The+Bund+Shanghai" target="_blank" rel="noopener" class="name">Walk along the Bund</a> (Zhongshan East 1st Road) to enjoy the skyline, then walk or taxi back to the hotel.',
+      d10dow: "Sunday 6 September", d10h3: "Modern Shanghai and the flight home",
+      d10s1: '<a href="https://www.google.com/maps/search/Tianzifang+Shanghai" target="_blank" rel="noopener" class="name">Tianzifang</a> (Taikang Road), narrow lanes, galleries, crafts, shops and cafés. Time for souvenirs.',
+      d10s2: '<a href="https://www.google.com/maps/search/Din+Tai+Fung+Xintiandi+Shanghai" target="_blank" rel="noopener" class="name">Lunch at Din Tai Fung</a> (Xintiandi Style Shopping Centre): xiaolongbao, dumplings and Taiwanese cooking. €20-30 per person.',
+      d10s3: '<a href="https://www.google.com/maps/search/Xintiandi+Shanghai" target="_blank" rel="noopener" class="name">Xintiandi</a> (Madang Road), the most elegant part of Shanghai: shops, terraces and galleries. Time for a coffee.',
+      d10s4: '<a href="https://www.google.com/maps/search/Nanjing+Road+Pedestrian+Street+Shanghai" target="_blank" rel="noopener" class="name">Nanjing Road</a>, free time to stroll, browse the department stores and pick up the last souvenirs. Until 18:30.',
+      d10s5: '<span class="name">Back to the hotel</span>, collect the bags, shower and change.',
+      d10s6: '<span class="name">Last dinner of the trip</span>: Lost Heaven (if we didn\'t go on Saturday) or Din Tai Fung if we\'d rather repeat.',
+      d10s7: '<a href="https://www.google.com/maps/search/Shanghai+Pudong+International+Airport" target="_blank" rel="noopener" class="name">Taxi to Pudong (PVG)</a><span class="tag warn">Tight</span> 45-60 minutes, expected arrival 22:30 and international flight at 00:00.',
+      footer: 'China · 28 August – 6 September 2026 · made for the family<br>Photos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blank" rel="noopener">Wikimedia Commons</a>, CC BY-SA'
+    }
+  };
+
+  var i18nOrig = {};
+  function captureOrig(){
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var k = el.getAttribute('data-i18n');
+      if(!(k in i18nOrig)) i18nOrig[k] = el.innerHTML;
+    });
+  }
+  function setLang(lang){
+    var dict = I18N[lang];
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var k = el.getAttribute('data-i18n');
+      var v = (lang === 'ca') ? i18nOrig[k] : (dict && dict[k] != null ? dict[k] : i18nOrig[k]);
+      if(v != null) el.innerHTML = v;
+    });
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-btn[data-lang]').forEach(function(b){
+      var on = b.getAttribute('data-lang') === lang;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on);
+    });
+    try { localStorage.setItem('cn_lang', lang); } catch(e){}
+    updatePopups(lang);
+  }
+
+  /* ---------- map ---------- */
+  var map = L.map('map', {scrollWheelZoom:false}).setView([33, 113], 5);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19, attribution: 'Imatgeria © Esri, Maxar, Earthstar Geographics'
+  }).addTo(map);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19, opacity: 0.9
+  }).addTo(map);
+
+  var DAY_COLORS = {1:'#c0392b',2:'#d1603d',3:'#c9992e',4:'#a9752f',5:'#5a9e5e',6:'#2f8f7a',7:'#3d8fa0',8:'#4a7fb5',9:'#5a63b0',10:'#7e5aa8'};
+
+  var HOTEL_BJ=[39.91340,116.41265], HOTEL_XA=[34.26101,108.94234], HOTEL_ZJJ=[29.11365,110.47926],
+      WULINGYUAN=[29.33870,110.52831], FENGHUANG=[27.95086,109.59978], HOTEL_SH=[31.23193,121.47154];
+
+  // l = etiqueta curta · img = foto del pin · major = surt a la vista resum · opt = secundari
+  var stops = [
+    // Dia 1
+    {n:'Aeroport de Beijing (PEK)', l:'PEK', c:[40.08023,116.59389], day:1, u:'https://www.google.com/maps/search/Beijing+Capital+International+Airport',
+      t:{ca:'Dia 1 · 12:00 · arribada',es:'Día 1 · 12:00 · llegada',en:'Day 1 · 12:00 · arrival'}},
+    {n:'Legendale Hotel Beijing', l:'Legendale', c:HOTEL_BJ, day:1, hotel:true, major:true, u:'https://www.google.com/maps/search/Legendale+Hotel+Beijing',
+      t:{ca:'Hotel a Beijing · nits 28, 29 i 30',es:'Hotel en Beijing · noches 28, 29 y 30',en:'Beijing hotel · nights 28, 29 and 30'}},
+    {n:'Wangfujing Street', l:'Wangfujing', c:[39.92273,116.40459], day:1, u:'https://www.google.com/maps/search/Wangfujing+Street+Beijing',
+      t:{ca:'Dia 1 · 16:30 · carrer principal',es:'Día 1 · 16:30 · calle principal',en:'Day 1 · 16:30 · main street'}},
+    {n:'Houhai / Shichahai', l:'Houhai', c:[39.94078,116.37965], day:1, img:'houhai.jpg', major:true, u:'https://www.google.com/maps/search/Houhai+Beijing',
+      t:{ca:'Dia 1 · 19:30 · llacs il·luminats',es:'Día 1 · 19:30 · lagos iluminados',en:'Day 1 · 19:30 · lit-up lakes'}},
+    {n:'Temple del Cel', l:'Temple del Cel', c:[39.87991,116.40287], day:1, opt:true, u:'https://www.google.com/maps/search/Temple+of+Heaven+Beijing',
+      t:{ca:'Alternativa de la tarda',es:'Alternativa de la tarde',en:'Afternoon alternative'}},
+    // Dia 2
+    {n:'Ciutat Prohibida', l:'Ciutat Prohibida', c:[39.91728,116.39077], day:2, img:'ciutatprohibida.jpg', major:true, u:'https://www.google.com/maps/search/Forbidden+City+Beijing',
+      t:{ca:'Dia 2 · matí · visita guiada 3-4h',es:'Día 2 · mañana · visita guiada 3-4h',en:'Day 2 · morning · guided tour 3-4h'}},
+    {n:'Plaça de Tiananmen', l:'Tiananmen', c:[39.90272,116.39144], day:2, opt:true, u:'https://www.google.com/maps/search/Tiananmen+Square+Beijing',
+      t:{ca:'Just davant de la Ciutat Prohibida',es:'Justo enfrente de la Ciudad Prohibida',en:'Right opposite the Forbidden City'}},
+    {n:'Parc Jingshan', l:'Jingshan', c:[39.92446,116.39040], day:2, u:'https://www.google.com/maps/search/Jingshan+Park+Beijing',
+      t:{ca:'Dia 2 · la millor panoràmica del palau',es:'Día 2 · la mejor panorámica del palacio',en:'Day 2 · the best view of the palace'}},
+    {n:'Nanluoguxiang (hutongs)', l:'Nanluoguxiang', c:[39.93577,116.39690], day:2, u:'https://www.google.com/maps/search/Nanluoguxiang+Beijing',
+      t:{ca:'Dia 2 · 17:00 · hutongs',es:'Día 2 · 17:00 · hutongs',en:'Day 2 · 17:00 · hutongs'}},
+    // Dia 3
+    {n:'Muralla de Mutianyu', l:'Mutianyu', c:[40.43452,116.56058], day:3, img:'muralla.jpg', major:true, u:'https://www.google.com/maps/search/Mutianyu+Great+Wall',
+      t:{ca:'Dia 3 · 08:30 · telecabina i torres 14-20',es:'Día 3 · 08:30 · telecabina y torres 14-20',en:'Day 3 · 08:30 · gondola and towers 14-20'}},
+    {n:'Estació de Beijing West', l:'Beijing West', c:[39.89367,116.31510], day:3, u:'https://www.google.com/maps/search/Beijing+West+Railway+Station',
+      t:{ca:'Dia 3 · 15:05 · tren G323',es:'Día 3 · 15:05 · tren G323',en:'Day 3 · 15:05 · train G323'}},
+    {n:"Estació de Xi'an North", l:"Xi'an North", c:[34.37770,108.93393], day:3, u:'https://www.google.com/maps/search/Xi+an+North+Railway+Station',
+      t:{ca:'Dia 3 · 22:10 · arribada',es:'Día 3 · 22:10 · llegada',en:'Day 3 · 22:10 · arrival'}},
+    {n:"Bell Tower i Muslim Quarter", l:'Bell Tower', c:HOTEL_XA, day:3, img:'xian.jpg', major:true, u:'https://www.google.com/maps/search/Bell+Tower+Xi+an',
+      t:{ca:"Dia 3 · nit · llums i sopar a Xi'an",es:"Día 3 · noche · luces y cena en Xi'an",en:"Day 3 · night · lights and dinner in Xi'an"}},
+    // Dia 4
+    {n:'Guerrers de terracota', l:'Guerrers', c:[34.38736,109.27767], day:4, img:'guerrers.jpg', major:true, u:'https://www.google.com/maps/search/Terracotta+Army+Museum+Xi+an',
+      t:{ca:'Dia 4 · 09:45 · l\'exèrcit del primer emperador',es:'Día 4 · 09:45 · el ejército del primer emperador',en:'Day 4 · 09:45 · the first emperor\'s army'}},
+    {n:"Aeroport de Xi'an (XIY)", l:'XIY', c:[34.44236,108.76003], day:4, u:'https://www.google.com/maps/search/Xi+an+Xianyang+International+Airport',
+      t:{ca:'Dia 4 · 18:00 · cap al vol',es:'Día 4 · 18:00 · hacia el vuelo',en:'Day 4 · 18:00 · to the flight'}},
+    {n:'Aeroport de Zhangjiajie (DYG)', l:'DYG', c:[29.10303,110.44159], day:4, u:'https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport',
+      t:{ca:'Dia 4 · nit · arribada a Hunan',es:'Día 4 · noche · llegada a Hunan',en:'Day 4 · night · arriving in Hunan'}},
+    {n:'Hampton by Hilton Zhangjiajie', l:'Hampton ZJJ', c:HOTEL_ZJJ, day:4, hotel:true, major:true, u:'https://www.google.com/maps/search/Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain',
+      t:{ca:'Hotel a Zhangjiajie · nit del 31',es:'Hotel en Zhangjiajie · noche del 31',en:'Zhangjiajie hotel · night of the 31st'}},
+    // Dia 5
+    {n:'Tianmen Mountain', l:'Tianmen', c:[29.04988,110.47889], day:5, img:'tianmen.jpg', major:true, u:'https://www.google.com/maps/search/Tianmen+Mountain',
+      t:{ca:'Dia 5 · telefèric de 7 km i Porta del Cel',es:'Día 5 · teleférico de 7 km y Puerta del Cielo',en:'Day 5 · 7 km cable car and Heaven\'s Gate'}},
+    {n:'Wulingyuan', l:'Wulingyuan', c:WULINGYUAN, day:5, hotel:true, major:true, u:'https://www.google.com/maps/search/Wulingyuan',
+      t:{ca:'SANHE Hotel · nits 1 i 2 de setembre',es:'SANHE Hotel · noches 1 y 2 de septiembre',en:'SANHE Hotel · nights 1 and 2 September'}},
+    // Dia 6
+    {n:'Parc Nacional de Zhangjiajie', l:'Parc Avatar', c:[29.31500,110.43500], day:6, img:'avatar.jpg', major:true, u:'https://www.google.com/maps/search/Zhangjiajie+National+Forest+Park',
+      t:{ca:'Dia 6 · tot el dia · les muntanyes d\'Avatar',es:'Día 6 · todo el día · las montañas de Avatar',en:'Day 6 · all day · the Avatar mountains'}},
+    {n:'Yuanjiajie (Hallelujah)', l:'Yuanjiajie', c:[29.36075,110.42457], day:6, opt:true, u:'https://www.google.com/maps/search/Yuanjiajie',
+      t:{ca:'La muntanya Hallelujah',es:'La montaña Hallelujah',en:'Hallelujah Mountain'}},
+    // Dia 7
+    {n:'Furong Ancient Town', l:'Furong', c:[28.74661,109.94280], day:7, opt:true, u:'https://www.google.com/maps/search/Furong+Ancient+Town',
+      t:{ca:'Opció 1 · poble de les cascades',es:'Opción 1 · pueblo de las cascadas',en:'Option 1 · waterfall village'}},
+    {n:'Fenghuang (Phoenix Ancient Town)', l:'Fenghuang', c:FENGHUANG, day:7, img:'fenghuang.jpg', hotel:true, major:true, u:'https://www.google.com/maps/search/Fenghuang+Ancient+Town',
+      t:{ca:'Dia 7 · nit del 3 · riu Tuojiang i llums',es:'Día 7 · noche del 3 · río Tuojiang y luces',en:'Day 7 · night of the 3rd · Tuojiang river and lights'}},
+    // Dia 8
+    {n:'Aeroport de Zhangjiajie (DYG)', l:'DYG', c:[29.10303,110.44159], day:8, u:'https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport',
+      t:{ca:'Dia 8 · vol cap a Shanghai',es:'Día 8 · vuelo hacia Shanghai',en:'Day 8 · flight to Shanghai'}},
+    {n:'Shanghai Pudong (PVG)', l:'PVG', c:[31.14274,121.80411], day:8, u:'https://www.google.com/maps/search/Shanghai+Pudong+International+Airport',
+      t:{ca:'Dia 8 · 22:40 · arribada',es:'Día 8 · 22:40 · llegada',en:'Day 8 · 22:40 · arrival'}},
+    {n:'Atour Hotel Shanghai Bund', l:'Atour Bund', c:HOTEL_SH, day:8, hotel:true, major:true, u:'https://www.google.com/maps/search/Atour+Hotel+Shanghai+Bund+Land+Plaza',
+      t:{ca:'Hotel a Shanghai · nits 4 i 5',es:'Hotel en Shanghai · noches 4 y 5',en:'Shanghai hotel · nights 4 and 5'}},
+    // Dia 9
+    {n:'Jardí Yuyuan', l:'Yuyuan', c:[31.22893,121.48798], day:9, img:'yuyuan.jpg', major:true, u:'https://www.google.com/maps/search/Yu+Garden+Shanghai',
+      t:{ca:'Dia 9 · 09:30 · jardí imperial i basar',es:'Día 9 · 09:30 · jardín imperial y bazar',en:'Day 9 · 09:30 · imperial garden and bazaar'}},
+    {n:'AP Plaza Market', l:'AP Plaza', c:[31.22000,121.54100], day:9, opt:true, u:'https://www.google.com/maps/search/AP+Plaza+Shanghai+Science+and+Technology+Museum',
+      t:{ca:'Dia 9 · 14:30 · compres i regateig',es:'Día 9 · 14:30 · compras y regateo',en:'Day 9 · 14:30 · shopping and haggling'}},
+    {n:'Shiliupu Wharf', l:'Creuer Huangpu', c:[31.23059,121.49378], day:9, u:'https://www.google.com/maps/search/Shiliupu+Wharf+Shanghai',
+      t:{ca:'Dia 9 · 20:30 · creuer nocturn',es:'Día 9 · 20:30 · crucero nocturno',en:'Day 9 · 20:30 · night cruise'}},
+    {n:'The Bund', l:'The Bund', c:[31.23534,121.48763], day:9, img:'bund.jpg', major:true, u:'https://www.google.com/maps/search/The+Bund+Shanghai',
+      t:{ca:'Dia 9 · 22:00 · l\'skyline',es:'Día 9 · 22:00 · el skyline',en:'Day 9 · 22:00 · the skyline'}},
+    // Dia 10
+    {n:'Tianzifang', l:'Tianzifang', c:[31.21034,121.46410], day:10, img:'tianzifang.jpg', major:true, u:'https://www.google.com/maps/search/Tianzifang+Shanghai',
+      t:{ca:'Dia 10 · 10:00 · carrers i artesania',es:'Día 10 · 10:00 · calles y artesanía',en:'Day 10 · 10:00 · lanes and crafts'}},
+    {n:'Xintiandi', l:'Xintiandi', c:[31.22193,121.47044], day:10, u:'https://www.google.com/maps/search/Xintiandi+Shanghai',
+      t:{ca:'Dia 10 · 14:00 · dinar i cafè',es:'Día 10 · 14:00 · comida y café',en:'Day 10 · 14:00 · lunch and coffee'}},
+    {n:'Nanjing Road', l:'Nanjing Rd', c:[31.23550,121.47950], day:10, u:'https://www.google.com/maps/search/Nanjing+Road+Pedestrian+Street+Shanghai',
+      t:{ca:'Dia 10 · 16:00 · últimes compres',es:'Día 10 · 16:00 · últimas compras',en:'Day 10 · 16:00 · last shopping'}},
+    {n:'Shanghai Pudong (PVG)', l:'PVG', c:[31.14274,121.80411], day:10, u:'https://www.google.com/maps/search/Shanghai+Pudong+International+Airport',
+      t:{ca:'Dia 10 · 22:30 · vol a les 00:00',es:'Día 10 · 22:30 · vuelo a las 00:00',en:'Day 10 · 22:30 · flight at 00:00'}}
+  ];
+
+  function popHtml(s, lang){
+    var sub = (s.t && s.t[lang]) ? s.t[lang] : (s.t && s.t.ca ? s.t.ca : '');
+    var img = s.img ? '<img class="pop-img" src="'+s.img+'" alt="">' : '';
+    return img+'<div class="pop-title">'+s.n+'</div>'+
+           '<div class="pop-sub">'+sub+'</div>'+
+           '<a class="pop-link" href="'+s.u+'" target="_blank" rel="noopener">'+(OPENMAPS[lang]||OPENMAPS.ca)+'</a>';
+  }
+  function photoIcon(src, col, num, size){
+    var badge = num ? '<span style="position:absolute;top:-4px;right:-7px;width:18px;height:18px;border-radius:50%;background:'+col+';color:#fff;font:700 10px/18px -apple-system,system-ui,sans-serif;text-align:center;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35)">'+num+'</span>' : '';
+    return L.divIcon({className:'', html:'<div style="position:relative;width:'+size+'px;height:'+size+'px"><img src="'+src+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid '+col+';box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.4);display:block">'+badge+'</div>', iconSize:[size,size], iconAnchor:[size/2,size/2]});
+  }
+  function numIconPlain(col, num){
+    return L.divIcon({className:'', html:'<div style="width:24px;height:24px;border-radius:50%;background:'+col+';border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);color:#fff;font:700 12px/24px -apple-system,system-ui,sans-serif;text-align:center">'+num+'</div>', iconSize:[24,24], iconAnchor:[12,12]});
+  }
+  function optIcon(col){
+    return L.divIcon({className:'', html:'<div style="width:15px;height:15px;border-radius:50%;background:#fff;border:3px solid '+col+';box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>', iconSize:[15,15], iconAnchor:[8,8]});
+  }
+  function hotelIcon(col){
+    return L.divIcon({className:'', html:'<div style="width:28px;height:28px;border-radius:50%;background:'+col+';border:3px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.42);display:grid;place-items:center"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></div>', iconSize:[28,28], iconAnchor:[14,14]});
+  }
+
+  // punts de referencia de cada dia (per fer zoom)
+  var dayPoints = {1:[],2:[],3:[],4:[],5:[],6:[],7:[],8:[],9:[],10:[]};
+
+  // geometria real per carretera (precalculada amb OSRM)
+  var dayRoutes = {
+    1: [[40.07959,116.58739],[40.08029,116.58690],[40.07938,116.58453],[40.07747,116.58464],[40.07588,116.58245],[40.07296,116.58185],[40.05514,116.58413],[40.05182,116.58348],[40.03615,116.56813],[40.02914,116.55348],[40.01700,116.51815],[40.01423,116.51253],[39.94869,116.43937],[39.94807,116.41001],[39.91416,116.41157],[39.91415,116.41321],[39.91338,116.41311]],
+    3: [[39.91338,116.41311],[39.96756,116.41187],[39.96763,116.42679],[40.02187,116.45258],[40.04390,116.47603],[40.14342,116.47720],[40.19695,116.48792],[40.21845,116.50298],[40.24410,116.53355],[40.25864,116.57515],[40.26711,116.57211],[40.28661,116.58348],[40.28999,116.57309],[40.31366,116.57033],[40.31542,116.56101],[40.32614,116.55570],[40.34887,116.56862],[40.36078,116.55719],[40.36348,116.54547],[40.39553,116.55784],[40.41501,116.53895],[40.43324,116.55844],[40.41478,116.53829],[40.39550,116.55739],[40.36348,116.54547],[40.36078,116.55719],[40.34887,116.56862],[40.32614,116.55570],[40.31542,116.56101],[40.31366,116.57033],[40.28992,116.57312],[40.28665,116.58341],[40.25964,116.57222],[40.24420,116.53342],[40.22026,116.50450],[40.19653,116.48752],[40.14342,116.47700],[40.04210,116.47516],[40.02254,116.45248],[39.96847,116.42498],[39.96586,116.31650],[39.96098,116.30268],[39.89533,116.30179],[39.89499,116.31510]],
+    4: [[34.26144,108.94261],[34.27843,108.94375],[34.27892,108.97273],[34.28912,108.99860],[34.29047,109.03367],[34.29638,109.04518],[34.30038,109.06824],[34.31113,109.08420],[34.32277,109.10850],[34.34964,109.14992],[34.37741,109.18492],[34.39670,109.20174],[34.40368,109.21406],[34.40940,109.24371],[34.40647,109.26985],[34.40344,109.27729],[34.39584,109.28334],[34.39264,109.28358],[34.39053,109.27547],[34.38704,109.27562],[34.39047,109.27549],[34.39261,109.28367],[34.39485,109.28370],[34.40555,109.27348],[34.40951,109.24477],[34.40597,109.21528],[34.39811,109.20328],[34.37742,109.18473],[34.35088,109.15130],[34.32345,109.10926],[34.31141,109.08446],[34.30047,109.06816],[34.29656,109.04536],[34.29058,109.03358],[34.28917,108.99834],[34.27912,108.97272],[34.27898,108.96756],[34.26168,108.96752],[34.26144,108.94261],[34.26112,108.91865],[34.28815,108.91777],[34.28810,108.86791],[34.29238,108.85316],[34.29317,108.84084],[34.32658,108.84371],[34.34905,108.83483],[34.38676,108.78576],[34.40246,108.77788],[34.40841,108.77158],[34.41195,108.76237],[34.41275,108.73973],[34.41607,108.73019],[34.42565,108.73687],[34.43071,108.74989],[34.44128,108.76455],[34.44244,108.75994]],
+    5: [[29.11405,110.47934],[29.11506,110.48764],[29.11489,110.47609],[29.13640,110.45004],[29.15090,110.45276],[29.16668,110.46378],[29.18514,110.45159],[29.19486,110.45274],[29.21651,110.44180],[29.23361,110.44192],[29.23808,110.44479],[29.23959,110.45245],[29.24308,110.45515],[29.25336,110.45409],[29.25921,110.46448],[29.27479,110.46593],[29.29554,110.48307],[29.31864,110.51351],[29.34603,110.54006],[29.34705,110.53745],[29.33960,110.52859]],
+    7: [[29.33960,110.52859],[29.27576,110.46629],[29.24315,110.45508],[29.23412,110.44184],[29.18269,110.45291],[29.15984,110.41882],[29.16736,110.41040],[29.16360,110.37845],[29.13567,110.29067],[29.09986,110.24112],[29.05200,110.23023],[29.03161,110.21297],[28.98994,110.10092],[28.93733,110.01926],[28.86529,109.98121],[28.85351,109.98365],[28.81857,109.95122],[28.75883,109.95601],[28.74668,109.94293],[28.73657,109.94093],[28.71645,109.96850],[28.68741,109.96956],[28.68627,109.97933],[28.65816,109.97394],[28.56120,109.89403],[28.52909,109.88502],[28.48252,109.85110],[28.42448,109.79874],[28.37186,109.72399],[28.31843,109.67757],[28.29922,109.68214],[28.26269,109.72585],[28.23020,109.70563],[28.20403,109.66618],[28.06621,109.60129],[27.99383,109.61045],[27.98201,109.59398],[27.95816,109.61145],[27.95273,109.60111]],
+    8: [[27.95273,109.60111],[27.95816,109.61145],[27.97981,109.59771],[27.99242,109.61138],[28.06664,109.60150],[28.20537,109.66753],[28.23016,109.70573],[28.26607,109.72723],[28.29857,109.68293],[28.31969,109.67958],[28.37173,109.72399],[28.42500,109.79974],[28.50925,109.87344],[28.56060,109.89395],[28.66344,109.98793],[28.71047,109.93966],[28.75075,109.96412],[28.76820,109.94872],[28.81826,109.95112],[28.85351,109.98365],[28.86529,109.98121],[28.93733,110.01926],[28.98989,110.10090],[29.00701,110.16260],[29.05391,110.25820],[29.07372,110.36263],[29.09816,110.39993],[29.09159,110.41644],[29.10046,110.44505]]
+  };
+
+  // trajectes llargs: tren i avio (linies discontinues)
+  var links = {
+    3: [{type:'rail', from:[39.89367,116.31510], to:[34.37770,108.93393]}],
+    4: [{type:'air', from:[34.44236,108.76003], to:[29.10303,110.44159]}],
+    8: [{type:'air', from:[29.10303,110.44159], to:[31.14274,121.80411]},
+        {type:'road', pts:[[31.14382,121.80347],[31.19046,121.77234],[31.18797,121.74310],[31.16269,121.67159],[31.15821,121.64178],[31.14975,121.59109],[31.14111,121.53404],[31.13443,121.49171],[31.17394,121.47364],[31.18146,121.48029],[31.21525,121.46605],[31.23256,121.47097]]}]
+  };
+
+  var dayMarkers = {}, dayLines = {}, allBounds = [], markerRefs = [], daySeq = {};
+  for (var i=1;i<=10;i++){ dayMarkers[i]=[]; daySeq[i]=0; }
+
+  stops.forEach(function(s){
+    var mk, dotIcon, numIcon;
+    var col = DAY_COLORS[s.day];
+    if (s.hotel) {
+      var hic = hotelIcon(col);
+      mk = L.marker(s.c, {icon:hic, zIndexOffset:600}).bindPopup(popHtml(s, INIT_LANG));
+      mk.bindTooltip(s.l, {permanent:true, direction:'bottom', offset:[0,16], className:'pin-label'});
+      dayMarkers[s.day].push({marker:mk, dot:hic, num:hic, major:!!s.major});
+    } else if (s.opt) {
+      var oicon = s.img ? photoIcon(s.img, col, null, 28) : optIcon(col);
+      mk = L.marker(s.c, {icon:oicon}).bindPopup(popHtml(s, INIT_LANG));
+      mk.bindTooltip(s.l, {direction:'top', offset:[0,-12], className:'pin-label'});
+      dayMarkers[s.day].push({marker:mk, dot:oicon, num:oicon, major:false});
+    } else {
+      var num = ++daySeq[s.day];
+      if (s.img) { numIcon = photoIcon(s.img, col, num, 38); dotIcon = photoIcon(s.img, col, null, 34); }
+      else { numIcon = numIconPlain(col, num); dotIcon = numIcon; }
+      mk = L.marker(s.c, {icon:numIcon, zIndexOffset:500}).bindPopup(popHtml(s, INIT_LANG));
+      mk.bindTooltip(s.l, {permanent:true, direction:'bottom', offset:[0, s.img?22:14], className:'pin-label'});
+      dayMarkers[s.day].push({marker:mk, dot:dotIcon, num:numIcon, major:!!s.major});
+    }
+    dayPoints[s.day].push(s.c);
+    if (s.major) allBounds.push(s.c);
+    markerRefs.push({marker:mk, stop:s});
+  });
+
+  function updatePopups(lang){
+    markerRefs.forEach(function(r){ r.marker.setPopupContent(popHtml(r.stop, lang)); });
+  }
+
+  for (var d=1; d<=10; d++){
+    var col = DAY_COLORS[d];
+    var layers = [];
+    if (dayRoutes[d]) layers.push(L.polyline(dayRoutes[d], {color:col, weight:4, opacity:.85, lineJoin:'round'}));
+    if (links[d]) links[d].forEach(function(lk){
+      if (lk.type === 'road') layers.push(L.polyline(lk.pts, {color:col, weight:4, opacity:.85, lineJoin:'round'}));
+      else if (lk.type === 'rail') layers.push(L.polyline([lk.from, lk.to], {color:col, weight:3.5, opacity:.9, dashArray:'12,7'}));
+      else layers.push(L.polyline([lk.from, lk.to], {color:col, weight:3, opacity:.85, dashArray:'2,9', lineCap:'round'}));
+    });
+    // dies urbans sense ruta: uneix els punts amb linia fina
+    if (!layers.length && dayPoints[d].length > 1) layers.push(L.polyline(dayPoints[d], {color:col, weight:2.5, opacity:.6, dashArray:'5,7'}));
+    dayLines[d] = L.layerGroup(layers);
+  }
+
+  function showDay(day){ // 0 = resum
+    for (var d=1; d<=10; d++){
+      var on = (day===0 || day===d);
+      dayMarkers[d].forEach(function(rec){
+        var visible = on && (day!==0 || rec.major);
+        if(visible){ rec.marker.setIcon(day===0 ? rec.dot : rec.num); rec.marker.addTo(map); }
+        else { map.removeLayer(rec.marker); }
+      });
+      if(day!==0 && on){ dayLines[d].addTo(map); } else { map.removeLayer(dayLines[d]); }
+    }
+    document.querySelectorAll('.day').forEach(function(c){
+      c.style.display = (day===0 || +c.getAttribute('data-day')===day) ? '' : 'none';
+    });
+    document.querySelectorAll('.leg').forEach(function(b){
+      var on = +b.getAttribute('data-day')===day;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on);
+    });
+    var pts = day===0 ? allBounds : dayPoints[day].concat(dayRoutes[day]||[]);
+    if (day!==0 && links[day]) links[day].forEach(function(lk){
+      if (lk.type==='road') pts = pts.concat(lk.pts); else pts = pts.concat([lk.from, lk.to]);
+    });
+    if (pts.length) map.fitBounds(pts, {padding:[45,45], maxZoom:13});
+  }
+
+  document.querySelectorAll('.leg').forEach(function(b){
+    b.addEventListener('click', function(){
+      var d = +b.getAttribute('data-day');
+      showDay((d===0 || b.classList.contains('active')) ? 0 : d);
+    });
+  });
+
+  showDay(0);
+
+  // durant el viatge (28 agost - 6 setembre 2026), obre el dia que toca
+  (function(){
+    var now = new Date();
+    if (now.getFullYear() === 2026) {
+      var d = 0;
+      if (now.getMonth() === 7 && now.getDate() >= 28) d = now.getDate() - 27;      // 28-31 agost
+      else if (now.getMonth() === 8 && now.getDate() <= 6) d = now.getDate() + 4;   // 1-6 setembre
+      if (d >= 1 && d <= 10) showDay(d);
+    }
+  })();
+
+  /* ---------- init language ---------- */
+  captureOrig();
+  document.querySelectorAll('.lang-btn[data-lang]').forEach(function(b){
+    b.addEventListener('click', function(){ setLang(b.getAttribute('data-lang')); });
+  });
+  setLang(INIT_LANG);
+</script>
+</body>
+</html>
