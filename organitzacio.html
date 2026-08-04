@@ -119,6 +119,7 @@
   </a>
   <div class="langs">
     <a class="lang-btn nav-btn" href="index.html" data-i18n="navItin">← Itinerari</a>
+    <button type="button" class="lang-btn" id="mapToggle" title="Amap" data-i18n="btnAmap">Amap</button>
     <button type="button" class="lang-btn" data-lang="ca">CA</button>
     <button type="button" class="lang-btn" data-lang="es">ES</button>
     <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -348,6 +349,7 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
   var I18N = {
     es: {
       navItin: "← Itinerario",
+      btnAmap: "Amap",
       cMust: "Imprescindible antes de salir",
       mustIntro: 'Esto deberíamos tenerlo listo <b>los cinco</b> antes de subir al avión. Una vez allí, algunas de estas cosas ya no se pueden arreglar.',
       m1t: 'Pasaporte vigente<span class="who all">Todos</span>', m1d: 'Que caduque como mínimo 6 meses después de volver. No hace falta visado: los españoles tenemos exención hasta diciembre de 2026.',
@@ -411,6 +413,7 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
     },
     en: {
       navItin: "← Itinerary",
+      btnAmap: "Amap",
       cMust: "Essential before leaving",
       mustIntro: 'All <b>five of us</b> should have this sorted before boarding. Once we are there, some of these can no longer be fixed.',
       m1t: 'Valid passport<span class="who all">Everyone</span>', m1d: 'It must be valid for at least 6 months after we get back. No visa needed: Spanish citizens have a waiver until December 2026.',
@@ -474,6 +477,90 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
     }
   };
 
+
+  /* ---------- commutador Google Maps / Amap per als enllaços de l'itinerari ---------- */
+  var AMAP_LINKS = {
+    'Beijing+Capital+International+Airport+Terminal+2':'北京首都国际机场T2',
+    'Beijing+Capital+International+Airport':'北京首都国际机场',
+    'Shanghai+Pudong+International+Airport':'上海浦东国际机场',
+    'Shanghai+Hongqiao+International+Airport':'上海虹桥国际机场',
+    'Legendale+Hotel+Beijing':'北京励骏酒店',
+    'Siji+Minfu+Roast+Duck+Wangfujing':'四季民福烤鸭店 王府井',
+    'Xian+Lao+Man+Dumpling+Beijing':'馅老满',
+    'Wangfujing+Street+Beijing':'王府井大街',
+    'Temple+of+Heaven+Beijing':'天坛公园',
+    'Houhai+Beijing':'什刹海',
+    'Forbidden+City+Beijing':'故宫博物院',
+    'Jingshan+Park+Beijing':'景山公园',
+    'Beihai+Park+Beijing':'北海公园',
+    'Tiananmen+Square+Beijing':'天安门广场',
+    'Nanluoguxiang+Beijing':'南锣鼓巷',
+    'Mutianyu+Great+Wall':'慕田峪长城',
+    'Beijing+West+Railway+Station':'北京西站',
+    'Xi+an+North+Railway+Station':'西安北站',
+    'Bell+Tower+Xi+an':'西安钟楼',
+    'Muslim+Quarter+Xi+an':'回民街',
+    'Terracotta+Army+Museum+Xi+an':'秦始皇兵马俑博物馆',
+    'Xi+an+Xianyang+International+Airport':'西安咸阳国际机场',
+    'Zhangjiajie+Hehua+International+Airport':'张家界荷花国际机场',
+    'Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain':'张家界天门山希尔顿欢朋酒店',
+    'Tianmen+Mountain+Cableway+Station':'天门山索道公司',
+    'Tianmen+Mountain':'天门山',
+    'Zhangjiajie+National+Forest+Park':'张家界国家森林公园',
+    'Yuanjiajie':'袁家界',
+    'Wulingyuan':'武陵源',
+    'Furong+Ancient+Town':'芙蓉镇',
+    'Fenghuang+Ancient+Town':'凤凰古城',
+    'Hong+Bridge+Fenghuang':'凤凰虹桥',
+    'Phoenix+Riverside+Restaurant+Fenghuang':'凤凰古城 江边餐厅',
+    'Hongqiao+Riverside+Restaurant+Fenghuang':'凤凰古城 虹桥餐厅',
+    'Atour+Hotel+Shanghai+Bund+Land+Plaza':'亚朵酒店 上海外滩',
+    'Nanxiang+Steamed+Bun+Restaurant+Yu+Garden':'南翔馒头店 豫园',
+    'Yu+Garden+Shanghai':'豫园',
+    'AP+Plaza+Shanghai+Science+and+Technology+Museum':'亚太盛汇',
+    'Lost+Heaven+Shanghai+Gaoyou+Road':'花马天堂 高邮路',
+    'Shiliupu+Wharf+Shanghai':'十六铺码头',
+    'The+Bund+Shanghai':'外滩',
+    'Tianzifang+Shanghai':'田子坊',
+    'Din+Tai+Fung+Xintiandi+Shanghai':'鼎泰丰 新天地',
+    'Xintiandi+Shanghai':'新天地',
+    'Nanjing+Road+Pedestrian+Street+Shanghai':'南京路步行街'
+  };
+  var AMAP_KEYS = Object.keys(AMAP_LINKS).sort(function(a,b){ return b.length - a.length; });
+
+  var useAmap = false;
+  try { useAmap = localStorage.getItem('cn_amap') === '1'; } catch(e){}
+
+  function amapSearchUrl(kw){
+    return 'https://uri.amap.com/search?keyword=' + encodeURIComponent(kw) + '&callnative=1&src=xina-viatge';
+  }
+  function applyMapLinks(){
+    document.querySelectorAll('a[href*="google.com/maps"], a[href*="uri.amap.com/search"]').forEach(function(a){
+      if (!a.getAttribute('data-gmap')) {
+        if (a.href.indexOf('google.com/maps') < 0) return;
+        a.setAttribute('data-gmap', a.href);
+      }
+      var orig = a.getAttribute('data-gmap');
+      if (!useAmap) { a.href = orig; return; }
+      var kw = null;
+      for (var i = 0; i < AMAP_KEYS.length; i++){
+        if (orig.indexOf(AMAP_KEYS[i]) >= 0) { kw = AMAP_LINKS[AMAP_KEYS[i]]; break; }
+      }
+      if (!kw) {
+        var m = orig.match(/\/(?:search|dir)\/([^/?]+)/);
+        kw = m ? decodeURIComponent(m[1]).replace(/\+/g, ' ') : (a.textContent || '').trim();
+      }
+      a.href = amapSearchUrl(kw);
+    });
+    var btn = document.getElementById('mapToggle');
+    if (btn) { btn.classList.toggle('active', useAmap); btn.setAttribute('aria-pressed', useAmap); }
+  }
+  function toggleMaps(){
+    useAmap = !useAmap;
+    try { localStorage.setItem('cn_amap', useAmap ? '1' : '0'); } catch(e){}
+    applyMapLinks();
+  }
+
   var i18nOrig = {};
   document.querySelectorAll('[data-i18n]').forEach(function(el){
     var k = el.getAttribute('data-i18n');
@@ -493,11 +580,15 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
       b.setAttribute('aria-pressed', on);
     });
     try { localStorage.setItem('cn_lang', lang); } catch(e){}
+    if (typeof applyMapLinks === 'function') applyMapLinks();
   }
   document.querySelectorAll('.lang-btn[data-lang]').forEach(function(b){
     b.addEventListener('click', function(){ setLang(b.getAttribute('data-lang')); });
   });
+  var mapBtn = document.getElementById('mapToggle');
+  if (mapBtn) mapBtn.addEventListener('click', toggleMaps);
   setLang(INIT_LANG);
+  applyMapLinks();
 
   function wireList(sel, countId, prefix){
     var boxes = document.querySelectorAll(sel + ' input');

@@ -135,6 +135,10 @@
   .pop-sub { font-size:12.5px; color:var(--muted); margin:3px 0 9px; }
   .pop-link { display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600; color:#fff; background:var(--sea); padding:6px 11px; border-radius:8px; text-decoration:none; }
   .pop-link:hover { background:var(--sea-deep); }
+  .pop-btns { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .pop-link.soft { background:#f2ecea; color:var(--muted); font-weight:600; }
+  .pop-link.soft:hover { background:#e8e0dd; color:var(--ink); }
+  .pop-cn { font-size:12.5px; color:var(--muted); margin-top:1px; }
   .leaflet-tooltip.pin-label {
     background:#fff; border:0; border-radius:7px; padding:3px 8px;
     color:var(--ink); font-family:inherit; font-size:11px; font-weight:600;
@@ -184,6 +188,7 @@
   </div>
   <div class="langs">
     <a class="lang-btn nav-btn" href="organitzacio.html" data-i18n="navOrg">Organització</a>
+    <button type="button" class="lang-btn" id="mapToggle" title="Amap" data-i18n="btnAmap">Amap</button>
     <button type="button" class="lang-btn" data-lang="ca">CA</button>
     <button type="button" class="lang-btn" data-lang="es">ES</button>
     <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -493,11 +498,13 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
   var INIT_LANG = 'ca';
   try { INIT_LANG = localStorage.getItem('cn_lang') || 'ca'; } catch(e){}
   if (['ca','es','en'].indexOf(INIT_LANG) < 0) INIT_LANG = 'ca';
-  var OPENMAPS = { ca:'Obrir a Google Maps ↗', es:'Abrir en Google Maps ↗', en:'Open in Google Maps ↗' };
+  var AMAPTXT = { ca:'Obrir a Amap ↗', es:'Abrir en Amap ↗', en:'Open in Amap ↗' };
+  var GMAPTXT = { ca:'Google Maps', es:'Google Maps', en:'Google Maps' };
 
   var I18N = {
     es: {
       navOrg: "Organización",
+      btnAmap: "Amap",
       d1s0: '<span class="name">Salida de Barcelona</span>, jueves 27 a las 10:55 con China Eastern <b>MU250</b> (12h30 de vuelo). Reserva <b>MFFHG9</b>.',
       d1s1b: '<a href="https://www.google.com/maps/search/Shanghai+Hongqiao+International+Airport" target="_blank" rel="noopener" class="name">Vuelo de Hongqiao a Beijing</a>, China Eastern <b>MU5153</b> (2h30).',
       d1note: '<b>Es el momento mas justo del viaje.</b> Entre inmigracion, maletas y el traslado el margen es corto.',
@@ -593,6 +600,7 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
     },
     en: {
       navOrg: "Planning",
+      btnAmap: "Amap",
       d1s0: '<span class="name">Departure from Barcelona</span>, Thursday 27 at 10:55 with China Eastern <b>MU250</b> (12h30 flight). Booking ref <b>MFFHG9</b>.',
       d1s1b: '<a href="https://www.google.com/maps/search/Shanghai+Hongqiao+International+Airport" target="_blank" rel="noopener" class="name">Flight from Hongqiao to Beijing</a>, China Eastern <b>MU5153</b> (2h30).',
       d1note: '<b>The tightest moment of the trip.</b> Between immigration, bags and the transfer the margin is thin.',
@@ -710,6 +718,91 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
     });
     try { localStorage.setItem('cn_lang', lang); } catch(e){}
     updatePopups(lang);
+    if (typeof applyMapLinks === 'function') applyMapLinks();
+  }
+
+
+  /* ---------- commutador Google Maps / Amap per als enllaços de l'itinerari ---------- */
+  var AMAP_LINKS = {
+    'Beijing+Capital+International+Airport+Terminal+2':'北京首都国际机场T2',
+    'Beijing+Capital+International+Airport':'北京首都国际机场',
+    'Shanghai+Pudong+International+Airport':'上海浦东国际机场',
+    'Shanghai+Hongqiao+International+Airport':'上海虹桥国际机场',
+    'Legendale+Hotel+Beijing':'北京励骏酒店',
+    'Siji+Minfu+Roast+Duck+Wangfujing':'四季民福烤鸭店 王府井',
+    'Xian+Lao+Man+Dumpling+Beijing':'馅老满',
+    'Wangfujing+Street+Beijing':'王府井大街',
+    'Temple+of+Heaven+Beijing':'天坛公园',
+    'Houhai+Beijing':'什刹海',
+    'Forbidden+City+Beijing':'故宫博物院',
+    'Jingshan+Park+Beijing':'景山公园',
+    'Beihai+Park+Beijing':'北海公园',
+    'Tiananmen+Square+Beijing':'天安门广场',
+    'Nanluoguxiang+Beijing':'南锣鼓巷',
+    'Mutianyu+Great+Wall':'慕田峪长城',
+    'Beijing+West+Railway+Station':'北京西站',
+    'Xi+an+North+Railway+Station':'西安北站',
+    'Bell+Tower+Xi+an':'西安钟楼',
+    'Muslim+Quarter+Xi+an':'回民街',
+    'Terracotta+Army+Museum+Xi+an':'秦始皇兵马俑博物馆',
+    'Xi+an+Xianyang+International+Airport':'西安咸阳国际机场',
+    'Zhangjiajie+Hehua+International+Airport':'张家界荷花国际机场',
+    'Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain':'张家界天门山希尔顿欢朋酒店',
+    'Tianmen+Mountain+Cableway+Station':'天门山索道公司',
+    'Tianmen+Mountain':'天门山',
+    'Zhangjiajie+National+Forest+Park':'张家界国家森林公园',
+    'Yuanjiajie':'袁家界',
+    'Wulingyuan':'武陵源',
+    'Furong+Ancient+Town':'芙蓉镇',
+    'Fenghuang+Ancient+Town':'凤凰古城',
+    'Hong+Bridge+Fenghuang':'凤凰虹桥',
+    'Phoenix+Riverside+Restaurant+Fenghuang':'凤凰古城 江边餐厅',
+    'Hongqiao+Riverside+Restaurant+Fenghuang':'凤凰古城 虹桥餐厅',
+    'Atour+Hotel+Shanghai+Bund+Land+Plaza':'亚朵酒店 上海外滩',
+    'Nanxiang+Steamed+Bun+Restaurant+Yu+Garden':'南翔馒头店 豫园',
+    'Yu+Garden+Shanghai':'豫园',
+    'AP+Plaza+Shanghai+Science+and+Technology+Museum':'亚太盛汇',
+    'Lost+Heaven+Shanghai+Gaoyou+Road':'花马天堂 高邮路',
+    'Shiliupu+Wharf+Shanghai':'十六铺码头',
+    'The+Bund+Shanghai':'外滩',
+    'Tianzifang+Shanghai':'田子坊',
+    'Din+Tai+Fung+Xintiandi+Shanghai':'鼎泰丰 新天地',
+    'Xintiandi+Shanghai':'新天地',
+    'Nanjing+Road+Pedestrian+Street+Shanghai':'南京路步行街'
+  };
+  var AMAP_KEYS = Object.keys(AMAP_LINKS).sort(function(a,b){ return b.length - a.length; });
+
+  var useAmap = false;
+  try { useAmap = localStorage.getItem('cn_amap') === '1'; } catch(e){}
+
+  function amapSearchUrl(kw){
+    return 'https://uri.amap.com/search?keyword=' + encodeURIComponent(kw) + '&callnative=1&src=xina-viatge';
+  }
+  function applyMapLinks(){
+    document.querySelectorAll('a[href*="google.com/maps"], a[href*="uri.amap.com/search"]').forEach(function(a){
+      if (!a.getAttribute('data-gmap')) {
+        if (a.href.indexOf('google.com/maps') < 0) return;
+        a.setAttribute('data-gmap', a.href);
+      }
+      var orig = a.getAttribute('data-gmap');
+      if (!useAmap) { a.href = orig; return; }
+      var kw = null;
+      for (var i = 0; i < AMAP_KEYS.length; i++){
+        if (orig.indexOf(AMAP_KEYS[i]) >= 0) { kw = AMAP_LINKS[AMAP_KEYS[i]]; break; }
+      }
+      if (!kw) {
+        var m = orig.match(/\/(?:search|dir)\/([^/?]+)/);
+        kw = m ? decodeURIComponent(m[1]).replace(/\+/g, ' ') : (a.textContent || '').trim();
+      }
+      a.href = amapSearchUrl(kw);
+    });
+    var btn = document.getElementById('mapToggle');
+    if (btn) { btn.classList.toggle('active', useAmap); btn.setAttribute('aria-pressed', useAmap); }
+  }
+  function toggleMaps(){
+    useAmap = !useAmap;
+    try { localStorage.setItem('cn_amap', useAmap ? '1' : '0'); } catch(e){}
+    applyMapLinks();
   }
 
   /* ---------- map ---------- */
@@ -729,91 +822,130 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
   // l = etiqueta curta · img = foto del pin · major = surt a la vista resum · opt = secundari
   var stops = [
     // Dia 1
-    {n:'Aeroport de Beijing (PEK)', l:'PEK', c:[40.08023,116.59389], day:1, u:'https://www.google.com/maps/search/Beijing+Capital+International+Airport',
+    {n:'Aeroport de Beijing (PEK)', cn:'北京首都国际机场', l:'PEK', c:[40.08023,116.59389], day:1, u:'https://www.google.com/maps/search/Beijing+Capital+International+Airport',
       t:{ca:'Dia 1 · 12:00 · arribada',es:'Día 1 · 12:00 · llegada',en:'Day 1 · 12:00 · arrival'}},
-    {n:'Legendale Hotel Beijing', l:'Legendale', c:HOTEL_BJ, day:1, hotel:true, major:true, u:'https://www.google.com/maps/search/Legendale+Hotel+Beijing',
+    {n:'Legendale Hotel Beijing', cn:'北京励骏酒店', l:'Legendale', c:HOTEL_BJ, day:1, hotel:true, major:true, u:'https://www.google.com/maps/search/Legendale+Hotel+Beijing',
       t:{ca:'Hotel a Beijing · nits 28, 29 i 30',es:'Hotel en Beijing · noches 28, 29 y 30',en:'Beijing hotel · nights 28, 29 and 30'}},
-    {n:'Wangfujing Street', l:'Wangfujing', c:[39.92273,116.40459], day:1, u:'https://www.google.com/maps/search/Wangfujing+Street+Beijing',
+    {n:'Wangfujing Street', cn:'王府井大街', l:'Wangfujing', c:[39.92273,116.40459], day:1, u:'https://www.google.com/maps/search/Wangfujing+Street+Beijing',
       t:{ca:'Dia 1 · 16:30 · carrer principal',es:'Día 1 · 16:30 · calle principal',en:'Day 1 · 16:30 · main street'}},
-    {n:'Houhai / Shichahai', l:'Houhai', c:[39.94078,116.37965], day:1, img:'houhai.jpg', major:true, u:'https://www.google.com/maps/search/Houhai+Beijing',
+    {n:'Houhai / Shichahai', cn:'什刹海', l:'Houhai', c:[39.94078,116.37965], day:1, img:'houhai.jpg', major:true, u:'https://www.google.com/maps/search/Houhai+Beijing',
       t:{ca:'Dia 1 · 19:30 · llacs il·luminats',es:'Día 1 · 19:30 · lagos iluminados',en:'Day 1 · 19:30 · lit-up lakes'}},
-    {n:'Temple del Cel', l:'Temple del Cel', c:[39.87991,116.40287], day:1, opt:true, u:'https://www.google.com/maps/search/Temple+of+Heaven+Beijing',
+    {n:'Temple del Cel', cn:'天坛公园', l:'Temple del Cel', c:[39.87991,116.40287], day:1, opt:true, u:'https://www.google.com/maps/search/Temple+of+Heaven+Beijing',
       t:{ca:'Alternativa de la tarda',es:'Alternativa de la tarde',en:'Afternoon alternative'}},
     // Dia 2
-    {n:'Ciutat Prohibida', l:'Ciutat Prohibida', c:[39.91728,116.39077], day:2, img:'ciutatprohibida.jpg', major:true, u:'https://www.google.com/maps/search/Forbidden+City+Beijing',
+    {n:'Ciutat Prohibida', cn:'故宫博物院', l:'Ciutat Prohibida', c:[39.91728,116.39077], day:2, img:'ciutatprohibida.jpg', major:true, u:'https://www.google.com/maps/search/Forbidden+City+Beijing',
       t:{ca:'Dia 2 · matí · visita guiada 3-4h',es:'Día 2 · mañana · visita guiada 3-4h',en:'Day 2 · morning · guided tour 3-4h'}},
-    {n:'Plaça de Tiananmen', l:'Tiananmen', c:[39.90272,116.39144], day:2, opt:true, u:'https://www.google.com/maps/search/Tiananmen+Square+Beijing',
+    {n:'Plaça de Tiananmen', cn:'天安门广场', l:'Tiananmen', c:[39.90272,116.39144], day:2, opt:true, u:'https://www.google.com/maps/search/Tiananmen+Square+Beijing',
       t:{ca:'Just davant de la Ciutat Prohibida',es:'Justo enfrente de la Ciudad Prohibida',en:'Right opposite the Forbidden City'}},
-    {n:'Parc Jingshan', l:'Jingshan', c:[39.92446,116.39040], day:2, u:'https://www.google.com/maps/search/Jingshan+Park+Beijing',
+    {n:'Parc Jingshan', cn:'景山公园', l:'Jingshan', c:[39.92446,116.39040], day:2, u:'https://www.google.com/maps/search/Jingshan+Park+Beijing',
       t:{ca:'Dia 2 · la millor panoràmica del palau',es:'Día 2 · la mejor panorámica del palacio',en:'Day 2 · the best view of the palace'}},
-    {n:'Nanluoguxiang (hutongs)', l:'Nanluoguxiang', c:[39.93577,116.39690], day:2, u:'https://www.google.com/maps/search/Nanluoguxiang+Beijing',
+    {n:'Nanluoguxiang (hutongs)', cn:'南锣鼓巷', l:'Nanluoguxiang', c:[39.93577,116.39690], day:2, u:'https://www.google.com/maps/search/Nanluoguxiang+Beijing',
       t:{ca:'Dia 2 · 17:00 · hutongs',es:'Día 2 · 17:00 · hutongs',en:'Day 2 · 17:00 · hutongs'}},
     // Dia 3
-    {n:'Muralla de Mutianyu', l:'Mutianyu', c:[40.43452,116.56058], day:3, img:'muralla.jpg', major:true, u:'https://www.google.com/maps/search/Mutianyu+Great+Wall',
+    {n:'Muralla de Mutianyu', cn:'慕田峪长城', l:'Mutianyu', c:[40.43452,116.56058], day:3, img:'muralla.jpg', major:true, u:'https://www.google.com/maps/search/Mutianyu+Great+Wall',
       t:{ca:'Dia 3 · 08:30 · telecabina i torres 14-20',es:'Día 3 · 08:30 · telecabina y torres 14-20',en:'Day 3 · 08:30 · gondola and towers 14-20'}},
-    {n:'Estació de Beijing West', l:'Beijing West', c:[39.89367,116.31510], day:3, u:'https://www.google.com/maps/search/Beijing+West+Railway+Station',
+    {n:'Estació de Beijing West', cn:'北京西站', l:'Beijing West', c:[39.89367,116.31510], day:3, u:'https://www.google.com/maps/search/Beijing+West+Railway+Station',
       t:{ca:'Dia 3 · 15:05 · tren G323',es:'Día 3 · 15:05 · tren G323',en:'Day 3 · 15:05 · train G323'}},
-    {n:"Estació de Xi'an North", l:"Xi'an North", c:[34.37770,108.93393], day:3, u:'https://www.google.com/maps/search/Xi+an+North+Railway+Station',
+    {n:"Estació de Xi'an North", cn:"西安北站", l:"Xi'an North", c:[34.37770,108.93393], day:3, u:'https://www.google.com/maps/search/Xi+an+North+Railway+Station',
       t:{ca:'Dia 3 · 22:10 · arribada',es:'Día 3 · 22:10 · llegada',en:'Day 3 · 22:10 · arrival'}},
-    {n:"Bell Tower i Muslim Quarter", l:'Bell Tower', c:HOTEL_XA, day:3, img:'xian.jpg', major:true, u:'https://www.google.com/maps/search/Bell+Tower+Xi+an',
+    {n:"Bell Tower i Muslim Quarter", cn:"西安钟楼", l:'Bell Tower', c:HOTEL_XA, day:3, img:'xian.jpg', major:true, u:'https://www.google.com/maps/search/Bell+Tower+Xi+an',
       t:{ca:"Dia 3 · nit · llums i sopar a Xi'an",es:"Día 3 · noche · luces y cena en Xi'an",en:"Day 3 · night · lights and dinner in Xi'an"}},
     // Dia 4
-    {n:'Guerrers de terracota', l:'Guerrers', c:[34.38736,109.27767], day:4, img:'guerrers.jpg', major:true, u:'https://www.google.com/maps/search/Terracotta+Army+Museum+Xi+an',
+    {n:'Guerrers de terracota', cn:'秦始皇兵马俑博物馆', l:'Guerrers', c:[34.38736,109.27767], day:4, img:'guerrers.jpg', major:true, u:'https://www.google.com/maps/search/Terracotta+Army+Museum+Xi+an',
       t:{ca:'Dia 4 · 09:45 · l\'exèrcit del primer emperador',es:'Día 4 · 09:45 · el ejército del primer emperador',en:'Day 4 · 09:45 · the first emperor\'s army'}},
-    {n:"Aeroport de Xi'an (XIY)", l:'XIY', c:[34.44236,108.76003], day:4, u:'https://www.google.com/maps/search/Xi+an+Xianyang+International+Airport',
+    {n:"Aeroport de Xi'an (XIY)", cn:"西安咸阳国际机场", l:'XIY', c:[34.44236,108.76003], day:4, u:'https://www.google.com/maps/search/Xi+an+Xianyang+International+Airport',
       t:{ca:'Dia 4 · 18:00 · cap al vol',es:'Día 4 · 18:00 · hacia el vuelo',en:'Day 4 · 18:00 · to the flight'}},
-    {n:'Aeroport de Zhangjiajie (DYG)', l:'DYG', c:[29.10303,110.44159], day:4, u:'https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport',
+    {n:'Aeroport de Zhangjiajie (DYG)', cn:'张家界荷花国际机场', l:'DYG', c:[29.10303,110.44159], day:4, u:'https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport',
       t:{ca:'Dia 4 · nit · arribada a Hunan',es:'Día 4 · noche · llegada a Hunan',en:'Day 4 · night · arriving in Hunan'}},
-    {n:'Hampton by Hilton Zhangjiajie', l:'Hampton ZJJ', c:HOTEL_ZJJ, day:4, hotel:true, major:true, u:'https://www.google.com/maps/search/Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain',
+    {n:'Hampton by Hilton Zhangjiajie', cn:'张家界天门山希尔顿欢朋酒店', l:'Hampton ZJJ', c:HOTEL_ZJJ, day:4, hotel:true, major:true, u:'https://www.google.com/maps/search/Hampton+by+Hilton+Zhangjiajie+Tianmen+Mountain',
       t:{ca:'Hotel a Zhangjiajie · nit del 31',es:'Hotel en Zhangjiajie · noche del 31',en:'Zhangjiajie hotel · night of the 31st'}},
     // Dia 5
-    {n:'Tianmen Mountain', l:'Tianmen', c:[29.04988,110.47889], day:5, img:'tianmen.jpg', major:true, u:'https://www.google.com/maps/search/Tianmen+Mountain',
+    {n:'Tianmen Mountain', cn:'天门山', l:'Tianmen', c:[29.04988,110.47889], day:5, img:'tianmen.jpg', major:true, u:'https://www.google.com/maps/search/Tianmen+Mountain',
       t:{ca:'Dia 5 · telefèric de 7 km i Porta del Cel',es:'Día 5 · teleférico de 7 km y Puerta del Cielo',en:'Day 5 · 7 km cable car and Heaven\'s Gate'}},
-    {n:'Wulingyuan', l:'Wulingyuan', c:WULINGYUAN, day:5, hotel:true, major:true, u:'https://www.google.com/maps/search/Wulingyuan',
+    {n:'Wulingyuan', cn:'武陵源风景名胜区', l:'Wulingyuan', c:WULINGYUAN, day:5, hotel:true, major:true, u:'https://www.google.com/maps/search/Wulingyuan',
       t:{ca:'SANHE Hotel · nits 1 i 2 de setembre',es:'SANHE Hotel · noches 1 y 2 de septiembre',en:'SANHE Hotel · nights 1 and 2 September'}},
     // Dia 6
-    {n:'Parc Nacional de Zhangjiajie', l:'Parc Avatar', c:[29.31500,110.43500], day:6, img:'avatar.jpg', major:true, u:'https://www.google.com/maps/search/Zhangjiajie+National+Forest+Park',
+    {n:'Parc Nacional de Zhangjiajie', cn:'张家界国家森林公园', l:'Parc Avatar', c:[29.31500,110.43500], day:6, img:'avatar.jpg', major:true, u:'https://www.google.com/maps/search/Zhangjiajie+National+Forest+Park',
       t:{ca:'Dia 6 · tot el dia · les muntanyes d\'Avatar',es:'Día 6 · todo el día · las montañas de Avatar',en:'Day 6 · all day · the Avatar mountains'}},
-    {n:'Yuanjiajie (Hallelujah)', l:'Yuanjiajie', c:[29.36075,110.42457], day:6, opt:true, u:'https://www.google.com/maps/search/Yuanjiajie',
+    {n:'Yuanjiajie (Hallelujah)', cn:'袁家界', l:'Yuanjiajie', c:[29.36075,110.42457], day:6, opt:true, u:'https://www.google.com/maps/search/Yuanjiajie',
       t:{ca:'La muntanya Hallelujah',es:'La montaña Hallelujah',en:'Hallelujah Mountain'}},
     // Dia 7
-    {n:'Furong Ancient Town', l:'Furong', c:[28.74661,109.94280], day:7, opt:true, u:'https://www.google.com/maps/search/Furong+Ancient+Town',
+    {n:'Furong Ancient Town', cn:'芙蓉镇', l:'Furong', c:[28.74661,109.94280], day:7, opt:true, u:'https://www.google.com/maps/search/Furong+Ancient+Town',
       t:{ca:'Opció 1 · poble de les cascades',es:'Opción 1 · pueblo de las cascadas',en:'Option 1 · waterfall village'}},
-    {n:'Fenghuang (Phoenix Ancient Town)', l:'Fenghuang', c:FENGHUANG, day:7, img:'fenghuang.jpg', hotel:true, major:true, u:'https://www.google.com/maps/search/Fenghuang+Ancient+Town',
+    {n:'Fenghuang (Phoenix Ancient Town)', cn:'凤凰古城', l:'Fenghuang', c:FENGHUANG, day:7, img:'fenghuang.jpg', hotel:true, major:true, u:'https://www.google.com/maps/search/Fenghuang+Ancient+Town',
       t:{ca:'Dia 7 · nit del 3 · riu Tuojiang i llums',es:'Día 7 · noche del 3 · río Tuojiang y luces',en:'Day 7 · night of the 3rd · Tuojiang river and lights'}},
     // Dia 8
-    {n:'Aeroport de Zhangjiajie (DYG)', l:'DYG', c:[29.10303,110.44159], day:8, u:'https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport',
+    {n:'Aeroport de Zhangjiajie (DYG)', cn:'张家界荷花国际机场', l:'DYG', c:[29.10303,110.44159], day:8, u:'https://www.google.com/maps/search/Zhangjiajie+Hehua+International+Airport',
       t:{ca:'Dia 8 · vol cap a Shanghai',es:'Día 8 · vuelo hacia Shanghai',en:'Day 8 · flight to Shanghai'}},
-    {n:'Shanghai Pudong (PVG)', l:'PVG', c:[31.14274,121.80411], day:8, u:'https://www.google.com/maps/search/Shanghai+Pudong+International+Airport',
+    {n:'Shanghai Pudong (PVG)', cn:'上海浦东国际机场', l:'PVG', c:[31.14274,121.80411], day:8, u:'https://www.google.com/maps/search/Shanghai+Pudong+International+Airport',
       t:{ca:'Dia 8 · 22:40 · arribada',es:'Día 8 · 22:40 · llegada',en:'Day 8 · 22:40 · arrival'}},
-    {n:'Atour Hotel Shanghai Bund', l:'Atour Bund', c:HOTEL_SH, day:8, hotel:true, major:true, u:'https://www.google.com/maps/search/Atour+Hotel+Shanghai+Bund+Land+Plaza',
+    {n:'Atour Hotel Shanghai Bund', cn:'亚朵酒店上海外滩', l:'Atour Bund', c:HOTEL_SH, day:8, hotel:true, major:true, u:'https://www.google.com/maps/search/Atour+Hotel+Shanghai+Bund+Land+Plaza',
       t:{ca:'Hotel a Shanghai · nits 4 i 5',es:'Hotel en Shanghai · noches 4 y 5',en:'Shanghai hotel · nights 4 and 5'}},
     // Dia 9
-    {n:'Jardí Yuyuan', l:'Yuyuan', c:[31.22893,121.48798], day:9, img:'yuyuan.jpg', major:true, u:'https://www.google.com/maps/search/Yu+Garden+Shanghai',
+    {n:'Jardí Yuyuan', cn:'豫园', l:'Yuyuan', c:[31.22893,121.48798], day:9, img:'yuyuan.jpg', major:true, u:'https://www.google.com/maps/search/Yu+Garden+Shanghai',
       t:{ca:'Dia 9 · 09:30 · jardí imperial i basar',es:'Día 9 · 09:30 · jardín imperial y bazar',en:'Day 9 · 09:30 · imperial garden and bazaar'}},
-    {n:'AP Plaza Market', l:'AP Plaza', c:[31.22000,121.54100], day:9, opt:true, u:'https://www.google.com/maps/search/AP+Plaza+Shanghai+Science+and+Technology+Museum',
+    {n:'AP Plaza Market', cn:'亚太盛汇', l:'AP Plaza', c:[31.22000,121.54100], day:9, opt:true, u:'https://www.google.com/maps/search/AP+Plaza+Shanghai+Science+and+Technology+Museum',
       t:{ca:'Dia 9 · 14:30 · compres i regateig',es:'Día 9 · 14:30 · compras y regateo',en:'Day 9 · 14:30 · shopping and haggling'}},
-    {n:'Shiliupu Wharf', l:'Creuer Huangpu', c:[31.23059,121.49378], day:9, u:'https://www.google.com/maps/search/Shiliupu+Wharf+Shanghai',
+    {n:'Shiliupu Wharf', cn:'十六铺码头', l:'Creuer Huangpu', c:[31.23059,121.49378], day:9, u:'https://www.google.com/maps/search/Shiliupu+Wharf+Shanghai',
       t:{ca:'Dia 9 · 20:30 · creuer nocturn',es:'Día 9 · 20:30 · crucero nocturno',en:'Day 9 · 20:30 · night cruise'}},
-    {n:'The Bund', l:'The Bund', c:[31.23534,121.48763], day:9, img:'bund.jpg', major:true, u:'https://www.google.com/maps/search/The+Bund+Shanghai',
+    {n:'The Bund', cn:'外滩', l:'The Bund', c:[31.23534,121.48763], day:9, img:'bund.jpg', major:true, u:'https://www.google.com/maps/search/The+Bund+Shanghai',
       t:{ca:'Dia 9 · 22:00 · l\'skyline',es:'Día 9 · 22:00 · el skyline',en:'Day 9 · 22:00 · the skyline'}},
     // Dia 10
-    {n:'Tianzifang', l:'Tianzifang', c:[31.21034,121.46410], day:10, img:'tianzifang.jpg', major:true, u:'https://www.google.com/maps/search/Tianzifang+Shanghai',
+    {n:'Tianzifang', cn:'田子坊', l:'Tianzifang', c:[31.21034,121.46410], day:10, img:'tianzifang.jpg', major:true, u:'https://www.google.com/maps/search/Tianzifang+Shanghai',
       t:{ca:'Dia 10 · 10:00 · carrers i artesania',es:'Día 10 · 10:00 · calles y artesanía',en:'Day 10 · 10:00 · lanes and crafts'}},
-    {n:'Xintiandi', l:'Xintiandi', c:[31.22193,121.47044], day:10, u:'https://www.google.com/maps/search/Xintiandi+Shanghai',
+    {n:'Xintiandi', cn:'新天地', l:'Xintiandi', c:[31.22193,121.47044], day:10, u:'https://www.google.com/maps/search/Xintiandi+Shanghai',
       t:{ca:'Dia 10 · 14:00 · dinar i cafè',es:'Día 10 · 14:00 · comida y café',en:'Day 10 · 14:00 · lunch and coffee'}},
-    {n:'Nanjing Road', l:'Nanjing Rd', c:[31.23550,121.47950], day:10, u:'https://www.google.com/maps/search/Nanjing+Road+Pedestrian+Street+Shanghai',
+    {n:'Nanjing Road', cn:'南京路步行街', l:'Nanjing Rd', c:[31.23550,121.47950], day:10, u:'https://www.google.com/maps/search/Nanjing+Road+Pedestrian+Street+Shanghai',
       t:{ca:'Dia 10 · 16:00 · últimes compres',es:'Día 10 · 16:00 · últimas compras',en:'Day 10 · 16:00 · last shopping'}},
-    {n:'Shanghai Pudong (PVG)', l:'PVG', c:[31.14274,121.80411], day:10, u:'https://www.google.com/maps/search/Shanghai+Pudong+International+Airport',
+    {n:'Shanghai Pudong (PVG)', cn:'上海浦东国际机场', l:'PVG', c:[31.14274,121.80411], day:10, u:'https://www.google.com/maps/search/Shanghai+Pudong+International+Airport',
       t:{ca:'Dia 10 · 22:30 · vol a les 00:00',es:'Día 10 · 22:30 · vuelo a las 00:00',en:'Day 10 · 22:30 · flight at 00:00'}}
   ];
+
+
+  /* ---------- Amap: la Xina desplaça les coordenades (GCJ-02), cal convertir-les ---------- */
+  function outOfChina(lat, lon){ return !(lon > 73.66 && lon < 135.05 && lat > 3.86 && lat < 53.55); }
+  function trLat(x, y){
+    var r = -100 + 2*x + 3*y + 0.2*y*y + 0.1*x*y + 0.2*Math.sqrt(Math.abs(x));
+    r += (20*Math.sin(6*x*Math.PI) + 20*Math.sin(2*x*Math.PI)) * 2/3;
+    r += (20*Math.sin(y*Math.PI) + 40*Math.sin(y/3*Math.PI)) * 2/3;
+    r += (160*Math.sin(y/12*Math.PI) + 320*Math.sin(y*Math.PI/30)) * 2/3;
+    return r;
+  }
+  function trLon(x, y){
+    var r = 300 + x + 2*y + 0.1*x*x + 0.1*x*y + 0.1*Math.sqrt(Math.abs(x));
+    r += (20*Math.sin(6*x*Math.PI) + 20*Math.sin(2*x*Math.PI)) * 2/3;
+    r += (20*Math.sin(x*Math.PI) + 40*Math.sin(x/3*Math.PI)) * 2/3;
+    r += (150*Math.sin(x/12*Math.PI) + 300*Math.sin(x/30*Math.PI)) * 2/3;
+    return r;
+  }
+  function wgs2gcj(lat, lon){
+    if (outOfChina(lat, lon)) return [lat, lon];
+    var a = 6378245.0, ee = 0.00669342162296594323;
+    var dLat = trLat(lon - 105.0, lat - 35.0), dLon = trLon(lon - 105.0, lat - 35.0);
+    var radLat = lat / 180.0 * Math.PI;
+    var magic = Math.sin(radLat); magic = 1 - ee * magic * magic;
+    var sq = Math.sqrt(magic);
+    dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sq) * Math.PI);
+    dLon = (dLon * 180.0) / (a / sq * Math.cos(radLat) * Math.PI);
+    return [lat + dLat, lon + dLon];
+  }
+  function amapUrl(stop){
+    var g = wgs2gcj(stop.c[0], stop.c[1]);
+    var nm = stop.cn || stop.n;
+    return 'https://uri.amap.com/marker?position=' + g[1].toFixed(6) + ',' + g[0].toFixed(6) +
+           '&name=' + encodeURIComponent(nm) + '&coordinate=gaode&callnative=1&src=xina-viatge';
+  }
 
   function popHtml(s, lang){
     var sub = (s.t && s.t[lang]) ? s.t[lang] : (s.t && s.t.ca ? s.t.ca : '');
     var img = s.img ? '<img class="pop-img" src="'+s.img+'" alt="">' : '';
-    return img+'<div class="pop-title">'+s.n+'</div>'+
+    var cnName = s.cn ? '<div class="pop-cn">'+s.cn+'</div>' : '';
+    return img+'<div class="pop-title">'+s.n+'</div>'+cnName+
            '<div class="pop-sub">'+sub+'</div>'+
-           '<a class="pop-link" href="'+s.u+'" target="_blank" rel="noopener">'+(OPENMAPS[lang]||OPENMAPS.ca)+'</a>';
+           '<div class="pop-btns">'+
+           '<a class="pop-link amap" href="'+amapUrl(s)+'" target="_blank" rel="noopener">'+(AMAPTXT[lang]||AMAPTXT.ca)+'</a>'+
+           '<a class="pop-link soft" href="'+s.u+'" target="_blank" rel="noopener">'+(GMAPTXT[lang]||GMAPTXT.ca)+'</a>'+
+           '</div>';
   }
   function photoIcon(src, col, num, size){
     var badge = num ? '<span style="position:absolute;top:-4px;right:-7px;width:18px;height:18px;border-radius:50%;background:'+col+';color:#fff;font:700 10px/18px -apple-system,system-ui,sans-serif;text-align:center;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.35)">'+num+'</span>' : '';
@@ -947,7 +1079,10 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
   document.querySelectorAll('.lang-btn[data-lang]').forEach(function(b){
     b.addEventListener('click', function(){ setLang(b.getAttribute('data-lang')); });
   });
+  var mapBtn = document.getElementById('mapToggle');
+  if (mapBtn) mapBtn.addEventListener('click', toggleMaps);
   setLang(INIT_LANG);
+  applyMapLinks();
 </script>
 </body>
 </html>
