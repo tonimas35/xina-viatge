@@ -78,6 +78,22 @@
   .pack-note { margin:12px 0 2px; font-size:12.5px; color:var(--muted); }
   .pack-count { font-size:12px; font-weight:700; color:var(--sea); background:#f7eeef; border-radius:999px; padding:4px 10px; margin-left:auto; }
 
+  /* ---------- IMPRESCINDIBLE ---------- */
+  .must-card { grid-column:1/-1; border-color:#e6cfd2; box-shadow:0 1px 2px rgba(140,47,57,.05), 0 4px 16px rgba(140,47,57,.07); }
+  .must-card .org-head { background:#fdf6f6; }
+  .must-list { list-style:none; margin:0; padding:0; }
+  .must-list > li { border-bottom:1px solid #f5f2f0; }
+  .must-list > li:last-child { border-bottom:0; }
+  .must-list label { display:flex; gap:13px; align-items:flex-start; padding:13px 0; cursor:pointer; }
+  .must-list input { width:19px; height:19px; flex:0 0 19px; margin-top:2px; accent-color:var(--sea); cursor:pointer; }
+  .must-txt { min-width:0; }
+  .must-txt b { display:block; font-size:14px; }
+  .must-txt span { display:block; font-size:12.5px; color:var(--muted); margin-top:2px; }
+  .must-list input:checked ~ .must-txt b { text-decoration:line-through; color:var(--muted); }
+  .must-list input:checked ~ .must-txt { opacity:.65; }
+  .who { display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase; padding:2px 7px; border-radius:5px; margin-left:6px; vertical-align:middle; background:#f7eeef; color:var(--sea); }
+  .who.all { background:#e9f6ee; color:#2f7a52; }
+
   footer { text-align:center; color:var(--muted); font-size:12.5px; padding:36px 24px 44px; }
   footer a { color:inherit; }
   @media (max-width:560px){ .hero { padding:48px 18px 28px; } .brand-name { display:none; } }
@@ -117,6 +133,31 @@
   <p class="sec-sub" data-i18n="orgSub">Reserves, coses pràctiques i la maleta: tot el que no és itinerari, en un sol lloc.</p>
 
   <div class="org-grid">
+
+    <section class="org-card must-card">
+      <div class="org-head">
+        <span class="org-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>
+        <h2 data-i18n="cMust">Imprescindible abans de sortir</h2>
+        <span class="pack-count" id="mustCount">0/0</span>
+      </div>
+      <div class="org-body">
+        <p class="pack-note" style="margin:6px 0 2px" data-i18n="mustIntro">Això ho hauríem de tenir enllestit <b>tots cinc</b> abans de pujar a l'avió. Un cop allà, algunes d'aquestes coses ja no es poden arreglar.</p>
+        <ul class="must-list">
+          <li><label><input type="checkbox" id="ms1"><span class="must-txt"><b data-i18n="m1t">Passaport vigent<span class="who all">Tothom</span></b><span data-i18n="m1d">Que caduqui com a mínim 6 mesos després de tornar. No cal visat: els espanyols en tenim exempció fins al desembre del 2026.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms2"><span class="must-txt"><b data-i18n="m2t">eSIM de dades comprada<span class="who all">Tothom</span></b><span data-i18n="m2d">És la clau de tot: com que el tràfic surt per Hong Kong, esquiva el bloqueig xinès i WhatsApp, Instagram i Google funcionen sense VPN. Airalo o Roamic, totes dues van bé. Comprar-la des de casa i activar-la en aterrar.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms3"><span class="must-txt"><b data-i18n="m3t">Mantenir el número espanyol per als SMS<span class="who all">Tothom</span></b><span data-i18n="m3d">L'eSIM només dona dades. El número de sempre el necessitem per rebre codis del banc i de l'Alipay, així que cal deixar-lo actiu però amb les dades desactivades per no pagar roaming.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms4"><span class="must-txt"><b data-i18n="m4t">Alipay amb la targeta vinculada<span class="who all">Tothom</span></b><span data-i18n="m4d">A la Xina gairebé ningú accepta efectiu ni targeta estrangera: es paga tot amb el mòbil. Vincular-hi la Revolut, que cobra menys comissió. Fer-ho des de casa, que demana verificació per SMS.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms5"><span class="must-txt"><b data-i18n="m5t">WeChat instal·lat i registrat<span class="who all">Tothom</span></b><span data-i18n="m5d">La segona forma de pagament del país i el que fa servir tothom per parlar. El registre a vegades demana que un usuari existent t'aprovi, així que millor no deixar-ho per l'últim dia.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms6"><span class="must-txt"><b data-i18n="m6t">Amap (o Maps.me) per moure's<span class="who all">Tothom</span></b><span data-i18n="m6d">A la Xina el Google Maps va malament fins i tot amb VPN, perquè les coordenades hi estan desplaçades a propòsit. L'Amap és el que fan servir allà i té mode en anglès.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms7"><span class="must-txt"><b data-i18n="m7t">VPN instal·lada com a pla B<span class="who all">Tothom</span></b><span data-i18n="m7d">Encara que amb l'eSIM no ens faci falta, si aquesta falla no la podrem descarregar estant allà, perquè les botigues d'apps també estan filtrades.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms8"><span class="must-txt"><b data-i18n="m8t">DiDi instal·lat<span class="who all">Tothom</span></b><span data-i18n="m8d">L'Uber xinès. Es pot fer servir en anglès i pagar amb Alipay, i evita haver d'explicar-se amb el taxista.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms9"><span class="must-txt"><b data-i18n="m9t">Traductor amb el xinès descarregat<span class="who all">Tothom</span></b><span data-i18n="m9d">Amb la càmera es poden llegir cartes i rètols. Cal baixar el paquet offline abans de marxar.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms10"><span class="must-txt"><b data-i18n="m10t">Powerbank a la maleta de mà<span class="who all">Tothom</span></b><span data-i18n="m10d">No pot anar facturat, és norma de seguretat. I amb tants trasllats i mapes al mòbil, farà falta.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms11"><span class="must-txt"><b data-i18n="m11t">Adaptador d'endoll<span class="who all">Tothom</span></b><span data-i18n="m11d">Tipus A i I, 220 V. N'hi ha prou amb un parell per a tots si portem una regleta.</span></span></label></li>
+          <li><label><input type="checkbox" id="ms12"><span class="must-txt"><b data-i18n="m12t">Còpia del passaport i de les reserves al mòbil<span class="who all">Tothom</span></b><span data-i18n="m12d">Fotos a la galeria, que es vegin sense connexió. Als trens i als hotels demanen el passaport diverses vegades.</span></span></label></li>
+        </ul>
+      </div>
+    </section>
 
     <section class="org-card">
       <div class="org-head">
@@ -307,6 +348,20 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
   var I18N = {
     es: {
       navItin: "← Itinerario",
+      cMust: "Imprescindible antes de salir",
+      mustIntro: 'Esto deberíamos tenerlo listo <b>los cinco</b> antes de subir al avión. Una vez allí, algunas de estas cosas ya no se pueden arreglar.',
+      m1t: 'Pasaporte vigente<span class="who all">Todos</span>', m1d: 'Que caduque como mínimo 6 meses después de volver. No hace falta visado: los españoles tenemos exención hasta diciembre de 2026.',
+      m2t: 'eSIM de datos comprada<span class="who all">Todos</span>', m2d: 'Es la clave de todo: como el tráfico sale por Hong Kong, esquiva el bloqueo chino y WhatsApp, Instagram y Google funcionan sin VPN. Airalo o Roamic, las dos van bien. Comprarla desde casa y activarla al aterrizar.',
+      m3t: 'Mantener el número español para los SMS<span class="who all">Todos</span>', m3d: 'La eSIM solo da datos. El número de siempre lo necesitamos para recibir códigos del banco y de Alipay, así que hay que dejarlo activo pero con los datos desactivados para no pagar roaming.',
+      m4t: 'Alipay con la tarjeta vinculada<span class="who all">Todos</span>', m4d: 'En China casi nadie acepta efectivo ni tarjeta extranjera: se paga todo con el móvil. Vincular la Revolut, que cobra menos comisión. Hacerlo desde casa, que pide verificación por SMS.',
+      m5t: 'WeChat instalado y registrado<span class="who all">Todos</span>', m5d: 'La segunda forma de pago del país y lo que usa todo el mundo para hablar. El registro a veces pide que un usuario existente te apruebe, así que mejor no dejarlo para el último día.',
+      m6t: 'Amap (o Maps.me) para moverse<span class="who all">Todos</span>', m6d: 'En China Google Maps va mal incluso con VPN, porque las coordenadas están desplazadas a propósito. Amap es lo que usan allí y tiene modo en inglés.',
+      m7t: 'VPN instalada como plan B<span class="who all">Todos</span>', m7d: 'Aunque con la eSIM no nos haga falta, si esta falla no la podremos descargar estando allí, porque las tiendas de apps también están filtradas.',
+      m8t: 'DiDi instalado<span class="who all">Todos</span>', m8d: 'El Uber chino. Se puede usar en inglés y pagar con Alipay, y evita tener que explicarse con el taxista.',
+      m9t: 'Traductor con el chino descargado<span class="who all">Todos</span>', m9d: 'Con la cámara se pueden leer cartas y carteles. Hay que bajar el paquete offline antes de irse.',
+      m10t: 'Powerbank en el equipaje de mano<span class="who all">Todos</span>', m10d: 'No puede ir facturado, es norma de seguridad. Y con tantos traslados y mapas en el móvil, hará falta.',
+      m11t: 'Adaptador de enchufe<span class="who all">Todos</span>', m11d: 'Tipo A e I, 220 V. Basta con un par para todos si llevamos una regleta.',
+      m12t: 'Copia del pasaporte y de las reservas en el móvil<span class="who all">Todos</span>', m12d: 'Fotos en la galería, que se vean sin conexión. En los trenes y hoteles piden el pasaporte varias veces.',
       kicker: "27 de agosto – 7 de septiembre de 2026 · 5 personas",
       orgTitle: "Organización",
       orgSub: "Reservas, cosas prácticas y la maleta: todo lo que no es itinerario, en un solo sitio.",
@@ -356,6 +411,20 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
     },
     en: {
       navItin: "← Itinerary",
+      cMust: "Essential before leaving",
+      mustIntro: 'All <b>five of us</b> should have this sorted before boarding. Once we are there, some of these can no longer be fixed.',
+      m1t: 'Valid passport<span class="who all">Everyone</span>', m1d: 'It must be valid for at least 6 months after we get back. No visa needed: Spanish citizens have a waiver until December 2026.',
+      m2t: 'Data eSIM bought<span class="who all">Everyone</span>', m2d: 'This is the key to everything: since the traffic exits via Hong Kong, it bypasses the Chinese block and WhatsApp, Instagram and Google work without a VPN. Airalo or Roamic, both work. Buy it from home and activate on landing.',
+      m3t: 'Keep the Spanish number for SMS<span class="who all">Everyone</span>', m3d: 'The eSIM only provides data. We need our usual number to receive bank and Alipay codes, so keep it active but with data off to avoid roaming charges.',
+      m4t: 'Alipay with a card linked<span class="who all">Everyone</span>', m4d: 'In China almost nobody takes cash or foreign cards: everything is paid by phone. Link the Revolut card, which charges less. Do it from home, as it needs SMS verification.',
+      m5t: 'WeChat installed and registered<span class="who all">Everyone</span>', m5d: 'The second payment method in the country and what everyone uses to chat. Registration sometimes needs an existing user to approve you, so do not leave it to the last day.',
+      m6t: 'Amap (or Maps.me) to get around<span class="who all">Everyone</span>', m6d: 'In China, Google Maps works badly even with a VPN, because coordinates are deliberately offset. Amap is what they use there and has an English mode.',
+      m7t: 'VPN installed as a plan B<span class="who all">Everyone</span>', m7d: 'Even if the eSIM makes it unnecessary, if that fails we will not be able to download one there, since the app stores are filtered too.',
+      m8t: 'DiDi installed<span class="who all">Everyone</span>', m8d: 'The Chinese Uber. It works in English and pays through Alipay, and saves explaining yourself to the driver.',
+      m9t: 'Translator with Chinese downloaded<span class="who all">Everyone</span>', m9d: 'The camera can read menus and signs. Download the offline pack before leaving.',
+      m10t: 'Power bank in hand luggage<span class="who all">Everyone</span>', m10d: 'It cannot go in checked bags, it is a safety rule. And with so many transfers and maps, we will need it.',
+      m11t: 'Plug adapter<span class="who all">Everyone</span>', m11d: 'Type A and I, 220 V. A couple is enough for everyone if we bring a power strip.',
+      m12t: 'Copy of passport and bookings on the phone<span class="who all">Everyone</span>', m12d: 'Photos in the gallery, viewable offline. Passports are checked several times at stations and hotels.',
       kicker: "27 August – 7 September 2026 · 5 people",
       orgTitle: "Planning",
       orgSub: "Bookings, practical matters and the packing list: everything that isn't the itinerary, in one place.",
@@ -430,20 +499,25 @@ Fotos: <a href="https://commons.wikimedia.org/wiki/Category:China" target="_blan
   });
   setLang(INIT_LANG);
 
-  function updCount(){
-    var t = document.querySelectorAll('.check input').length;
-    var c = document.querySelectorAll('.check input:checked').length;
-    document.getElementById('packCount').textContent = c + '/' + t;
-  }
-  document.querySelectorAll('.check input').forEach(function(cb){
-    var k = 'cn_pack_' + cb.id;
-    try { cb.checked = localStorage.getItem(k) === '1'; } catch(e){}
-    cb.addEventListener('change', function(){
-      try { localStorage.setItem(k, cb.checked ? '1' : '0'); } catch(e){}
-      updCount();
+  function wireList(sel, countId, prefix){
+    var boxes = document.querySelectorAll(sel + ' input');
+    var out = document.getElementById(countId);
+    function upd(){
+      var c = document.querySelectorAll(sel + ' input:checked').length;
+      if (out) out.textContent = c + '/' + boxes.length;
+    }
+    boxes.forEach(function(cb){
+      var k = prefix + cb.id;
+      try { cb.checked = localStorage.getItem(k) === '1'; } catch(e){}
+      cb.addEventListener('change', function(){
+        try { localStorage.setItem(k, cb.checked ? '1' : '0'); } catch(e){}
+        upd();
+      });
     });
-  });
-  updCount();
+    upd();
+  }
+  wireList('.must-list', 'mustCount', 'cn_must_');
+  wireList('.check', 'packCount', 'cn_pack_');
 </script>
 </body>
 </html>
